@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --color-cream: #f6efe1;
+  --color-cream-soft: #efe4cf;
+  --color-cream-deep: #e4d4b4;
+  --color-ink: #221d16;
+  --color-ink-soft: #4a4238;
+  --color-green: #1f3327;
+  --color-green-light: #35513f;
+  --color-terracotta: #bd6a3f;
+  --color-terracotta-light: #d98a5f;
+  --color-gold: #c39a56;
+
+  --background: var(--color-cream);
+  --foreground: var(--color-ink);
+}
+
+@theme inline {
+  --color-cream: var(--color-cream);
+  --color-cream-soft: var(--color-cream-soft);
+  --color-cream-deep: var(--color-cream-deep);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-green: var(--color-green);
+  --color-green-light: var(--color-green-light);
+  --color-terracotta: var(--color-terracotta);
+  --color-terracotta-light: var(--color-terracotta-light);
+  --color-gold: var(--color-gold);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), serif;
+}
+
+.eyebrow {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-terracotta);
+}
+
+.mosaic-bg {
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(196, 154, 87, 0.16), transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(31, 51, 39, 0.12), transparent 45%);
+}
