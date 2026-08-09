@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.1",
+    "libphonenumber-js": "^1.13.10",
     "next": "16.3.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",

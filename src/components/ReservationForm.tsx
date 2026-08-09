@@ -3,6 +3,7 @@
 import { useActionState, useRef, useEffect } from "react";
 import { submitReservation, type ReservationState } from "@/app/actions/reservation";
 import { CAFE_INFO } from "@/lib/cafe-info";
+import { bookableTimeSlots, bookingWindowLabel, latestBookableDate } from "@/lib/opening-hours";
 import { CheckIcon } from "./icons";
 
 const initialState: ReservationState = { status: "idle" };
@@ -24,6 +25,8 @@ export default function ReservationForm() {
   }, [state.status]);
 
   const today = new Date().toISOString().slice(0, 10);
+  const timeSlots = bookableTimeSlots();
+  const latestDate = latestBookableDate();
 
   return (
     <section id="reservierung" className="bg-green py-20 text-cream sm:py-28">
@@ -38,6 +41,7 @@ export default function ReservationForm() {
             anschließend telefonisch oder per E-Mail.
           </p>
           <p className="mt-6 text-sm text-cream/70">{CAFE_INFO.openingHours}</p>
+          <p className="mt-1 text-sm text-cream/70">{bookingWindowLabel}</p>
           <p className="mt-1 text-sm text-cream/70">
             Lieber direkt anrufen?{" "}
             <a href={`tel:${CAFE_INFO.phoneHref}`} className="underline decoration-terracotta-light">
@@ -79,13 +83,30 @@ export default function ReservationForm() {
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor="date" className={labelClasses}>Datum</label>
-              <input id="date" name="date" type="date" required min={today} className={inputClasses} />
+              <input
+                id="date"
+                name="date"
+                type="date"
+                required
+                min={today}
+                max={latestDate}
+                className={inputClasses}
+              />
               {errors.date && <p className="text-sm text-terracotta">{errors.date}</p>}
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor="time" className={labelClasses}>Uhrzeit</label>
-              <input id="time" name="time" type="time" required min="09:30" max="19:00" className={inputClasses} />
+              <select id="time" name="time" required defaultValue="" className={inputClasses}>
+                <option value="" disabled>
+                  Bitte wählen
+                </option>
+                {timeSlots.map((slot) => (
+                  <option key={slot} value={slot}>
+                    {slot} Uhr
+                  </option>
+                ))}
+              </select>
               {errors.time && <p className="text-sm text-terracotta">{errors.time}</p>}
             </div>
 
