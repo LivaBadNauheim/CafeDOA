@@ -78,6 +78,20 @@ stündlich, siehe `revalidate` in `src/app/page.tsx`) und zeigt die Bilder
 in der Galerie – die Platzhalter-Kacheln verschwinden automatisch, sobald
 mindestens ein Bild vorhanden ist.
 
+Zwei Dinge steuert ihr über den **Dateinamen**:
+
+- **Reihenfolge** – die Bilder werden alphabetisch sortiert, ein Präfix
+  legt die Position fest: `01_...`, `02_...`, `03_...`
+- **Bildbeschreibung** – der Rest des Namens wird zum Alternativtext für
+  Screenreader und Suchmaschinen. Aus `01_gemuetlicher-fensterplatz.jpg`
+  wird „Gemuetlicher fensterplatz – Café DOA". Kameranamen wie `IMG_2029`
+  werden erkannt und durch eine allgemeine Beschreibung ersetzt.
+
+Die Bilder werden automatisch verkleinert und ins moderne WebP-Format
+umgewandelt, ausgeliefert wird immer nur die für das Gerät passende
+Größe. Ihr könnt also die Originaldateien direkt hochladen, ohne sie
+vorher zu komprimieren.
+
 ## Auf Vercel deployen
 
 1. Repo in Vercel importieren (GitHub-Integration).

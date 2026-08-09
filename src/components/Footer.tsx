@@ -15,11 +15,16 @@ export default function Footer() {
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-cream">Adresse</h3>
-          <p className="mt-3 text-sm leading-relaxed">
-            {CAFE_INFO.addressLine}
+          <a
+            href={CAFE_INFO.mapsUrl}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="mt-3 block text-sm leading-relaxed transition-colors hover:text-cream"
+          >
+            {CAFE_INFO.street}
             <br />
             {CAFE_INFO.postalCity}
-          </p>
+          </a>
           <p className="mt-4 text-sm leading-relaxed">
             {CAFE_INFO.openingHours}
             <br />

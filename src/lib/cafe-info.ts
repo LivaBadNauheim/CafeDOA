@@ -1,14 +1,16 @@
 export const CAFE_INFO = {
   name: "Café DOA",
   city: "Bad Nauheim",
-  // TODO: Genaue Straße & Hausnummer ergänzen, sobald bekannt.
-  addressLine: "[Straße & Hausnummer]",
+  street: "Hauptstraße 11",
+  postalCode: "61231",
   postalCity: "61231 Bad Nauheim",
+  mapsUrl: "https://maps.google.com/?q=Hauptstra%C3%9Fe+11,+61231+Bad+Nauheim",
   phoneDisplay: "06032 / 78 43 278",
   phoneHref: "+4960327843278",
   instagramHandle: "@cafe.doa",
   instagramUrl: "https://www.instagram.com/cafe.doa/",
   openingHours: "Täglich 9:30 – 19:00 Uhr",
   kitchenHours: "Küche: Mo–Sa bis 19:45 Uhr, So bis 17:00 Uhr",
+  siteUrl: "https://cafe-doa.de",
   reservationNote: "Reservierungsanfragen werden von uns telefonisch oder per E-Mail bestätigt.",
 } as const;
