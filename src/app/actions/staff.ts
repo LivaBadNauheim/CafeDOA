@@ -17,11 +17,33 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
   const supabase = await createSupabaseServerClient();
   if (!supabase) return { error: "Die Anmeldung ist gerade nicht verfügbar." };
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
-    // Deliberately vague: naming which half was wrong tells an attacker
-    // whether an address is a real staff account.
+    // The message shown stays vague - naming which half was wrong tells an
+    // attacker whether an address is a real staff account - but the cause
+    // belongs in the logs, otherwise a failed login is undiagnosable.
+    console.error("Staff sign-in failed", {
+      code: error.code,
+      status: error.status,
+      message: error.message,
+    });
+
+    // Unconfirmed accounts are a setup mistake rather than a wrong password,
+    // and the guess-protection argument does not apply once credentials
+    // have already been accepted.
+    if (error.code === "email_not_confirmed") {
+      return {
+        error:
+          "Dieses Konto ist noch nicht bestätigt. Bitte in Supabase unter Authentication → Users bestätigen.",
+      };
+    }
+
     return { error: "E-Mail oder Passwort ist falsch." };
+  }
+
+  if (!data.session) {
+    console.error("Staff sign-in returned no session");
+    return { error: "Die Anmeldung konnte nicht abgeschlossen werden. Bitte versuche es erneut." };
   }
 
   redirect("/reservierung");
