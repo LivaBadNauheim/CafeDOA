@@ -104,6 +104,14 @@ export async function submitReservation(
   });
 
   if (error) {
+    // Guests get a generic message, but without the underlying cause in the
+    // logs a failed insert is undiagnosable from the outside.
+    console.error("Reservation insert failed", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    });
     return {
       status: "error",
       message: "Die Reservierung konnte nicht gesendet werden. Bitte versuche es später erneut oder ruf uns an.",
