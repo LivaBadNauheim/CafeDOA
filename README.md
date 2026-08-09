@@ -39,6 +39,29 @@ einen Hinweis, dass online noch nicht reserviert werden kann.
    NEXT_PUBLIC_SUPABASE_ANON_KEY=...
    ```
 
+### Reservierungsregeln
+
+Konfiguriert in `src/lib/opening-hours.ts`:
+
+- **Buchbare Zeiten:** 9:30 – 18:30 Uhr in 15-Minuten-Schritten (letzter
+  Slot 30 Minuten vor Schließung)
+- **Vorlauf:** Für den heutigen Tag mindestens 30 Minuten im Voraus
+- **Vorausbuchung:** maximal 180 Tage
+
+Die Zeitprüfung rechnet in `Europe/Berlin`, nicht in der Serverzeit (UTC) –
+sonst würden rund um Mitternacht und bei der Zeitumstellung die falschen
+Slots akzeptiert.
+
+Bei Kontaktdaten (`src/lib/contact-validation.ts`) werden abgelehnt:
+Platzhalter wie `du@du.de` oder `test@test.de`, Wegwerf-Adressen, Domains
+ohne Mailserver, Tippfehler bei gängigen Anbietern (`@gmial.com` →
+Hinweis auf `@gmail.com`) sowie Service- und Premiumnummern. Alle Regeln
+greifen serverseitig und lassen sich nicht durch Manipulation des
+Formulars umgehen.
+
+Ob eine Adresse wirklich dem Gast gehört, beweist letztlich erst die
+zugestellte Bestätigungsmail.
+
 ### Reservierungen verwalten
 
 Reservierungsanfragen landen in der Tabelle `reservations`
