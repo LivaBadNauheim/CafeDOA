@@ -34,9 +34,6 @@ yarn-error.log*
 .env*
 !.env.example
 
-# lockfile intentionally not committed; regenerated on install
-package-lock.json
-
 # vercel
 .vercel
 
