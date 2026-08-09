@@ -70,6 +70,45 @@ Reservierungsanfragen landen in der Tabelle `reservations`
 **Supabase Studio → Table Editor** einsehen und bestätigen (Status auf
 `confirmed`/`declined` setzen).
 
+## Mitarbeiter-Ansicht (reservierung.cafe-doa.de)
+
+Eingehende Reservierungen laufen live in einem geschützten Bereich auf.
+Er liegt im selben Projekt, wird aber über die Subdomain ausgeliefert
+(siehe `src/proxy.ts`) – lokal erreichbar unter `/reservierung`.
+
+### Einrichten
+
+1. **Datenbank vorbereiten:** `supabase/migrations/0002_staff_access.sql`
+   im SQL-Editor ausführen. Legt die Tabelle `staff` an, gibt dem Team
+   Lese- und Schreibrechte auf Reservierungen und schaltet Live-Updates
+   frei.
+2. **Selbstregistrierung abschalten:** In Supabase unter
+   **Authentication → Sign In / Providers → Email** die Option
+   *Allow new users to sign up* deaktivieren. Sonst könnte sich jeder ein
+   Konto anlegen.
+3. **Mitarbeiter anlegen:** **Authentication → Users → Add user**, E-Mail
+   und Passwort vergeben (Häkchen bei *Auto Confirm User*).
+4. **Zum Team hinzufügen** – erst dieser Schritt gibt Zugriff auf die
+   Reservierungen:
+   ```sql
+   insert into public.staff (user_id, display_name)
+   select id, 'Vorname' from auth.users where email = 'name@cafe-doa.de';
+   ```
+5. **Subdomain verbinden:** In Vercel unter **Settings → Domains** die
+   Domain `reservierung.cafe-doa.de` hinzufügen, dann bei IONOS den von
+   Vercel angezeigten `CNAME` für den Hostnamen `reservierung` eintragen.
+
+Ein Konto ohne Eintrag in `staff` kann sich zwar anmelden, sieht aber
+keine Daten – Zugriff wird bewusst einzeln vergeben.
+
+### Bedienung
+
+Reservierungen erscheinen automatisch, ohne die Seite neu zu laden (der
+Punkt oben rechts zeigt „Live"). Über **Bestätigen** und **Ablehnen**
+wird der Status gesetzt; bestätigte lassen sich später stornieren. Die
+Filter zeigen offene Anfragen, den heutigen Tag, alle kommenden oder
+sämtliche Reservierungen.
+
 ### Galerie-Fotos hochladen
 
 Fotos einfach im **Supabase Studio → Storage → gallery** hochladen. Die

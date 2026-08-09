@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.1",
     "libphonenumber-js": "^1.13.10",
     "next": "16.3.0",
