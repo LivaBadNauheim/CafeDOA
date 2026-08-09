@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getGalleryImages } from "@/lib/gallery";
 import { GALLERY_PLACEHOLDERS, PlaceholderTile } from "./PlaceholderTile";
 
@@ -16,14 +17,19 @@ export default async function Gallery() {
 
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3">
           {images.length > 0
-            ? images.map((image) => (
-                <div key={image.url} className="aspect-square overflow-hidden rounded-2xl bg-cream-soft">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+            ? images.map((image, index) => (
+                <div
+                  key={image.url}
+                  className="relative aspect-square overflow-hidden rounded-2xl bg-cream-soft"
+                >
+                  <Image
                     src={image.url}
-                    alt="Impression aus dem Café DOA"
-                    loading="lazy"
-                    className="h-full w-full object-cover"
+                    alt={image.alt}
+                    fill
+                    // Two columns on phones, three from the sm breakpoint up.
+                    sizes="(max-width: 640px) 50vw, (max-width: 1152px) 33vw, 368px"
+                    className="object-cover"
+                    priority={index < 3}
                   />
                 </div>
               ))
