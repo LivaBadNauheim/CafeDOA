@@ -47,6 +47,29 @@ Reservierungsanfragen landen in der Tabelle `reservations`
 **Supabase Studio → Table Editor** einsehen und bestätigen (Status auf
 `confirmed`/`declined` setzen).
 
+### E-Mail-Benachrichtigung einrichten (optional)
+
+Damit das Café bei jeder neuen Reservierung eine E-Mail bekommt, statt in
+Supabase nachschauen zu müssen:
+
+1. Account auf [resend.com](https://resend.com) anlegen (kostenloser Tarif
+   reicht: 3.000 E-Mails/Monat).
+2. Unter **Domains** die eigene Domain hinzufügen und die angezeigten
+   DNS-Einträge bei IONOS eintragen (nötig, damit die Mails nicht im Spam
+   landen).
+3. Unter **API Keys** einen Key erstellen.
+4. Diese drei Werte als Environment Variables setzen (lokal in
+   `.env.local`, live in den Vercel-Projekteinstellungen):
+   ```
+   RESEND_API_KEY=re_...
+   RESERVATION_NOTIFICATION_FROM=Reservierung <reservierung@eure-domain.de>
+   RESERVATION_NOTIFICATION_TO=info@eure-domain.de
+   ```
+
+Sind die Werte nicht gesetzt, funktioniert die Reservierung trotzdem – die
+Anfragen landen dann nur in der Datenbank, ohne E-Mail. Auch wenn der
+Mailversand fehlschlägt, bleibt die Reservierung gespeichert.
+
 ### Galerie-Fotos hochladen
 
 Fotos einfach im **Supabase Studio → Storage → gallery** hochladen. Die

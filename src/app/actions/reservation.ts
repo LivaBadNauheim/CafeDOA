@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase";
+import { sendReservationNotification } from "@/lib/email";
 
 const reservationSchema = z.object({
   name: z.string().trim().min(2, "Bitte gib deinen Namen an."),
@@ -108,6 +109,10 @@ export async function submitReservation(
       message: "Die Reservierung konnte nicht gesendet werden. Bitte versuche es später erneut oder ruf uns an.",
     };
   }
+
+  // Best-effort notification: the request is already stored, so a failure
+  // here must not surface as an error to the guest.
+  await sendReservationNotification({ name, email, phone, date, time, partySize, message: message || undefined });
 
   return {
     status: "success",
