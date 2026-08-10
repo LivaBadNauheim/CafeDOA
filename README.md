@@ -62,6 +62,39 @@ Formulars umgehen.
 Ob eine Adresse wirklich dem Gast gehört, beweist letztlich erst die
 zugestellte Bestätigungsmail.
 
+### E-Mails einrichten (Resend)
+
+Es werden vier Mails verschickt (`src/lib/email.ts`):
+
+| Auslöser | Empfänger | Inhalt |
+|---|---|---|
+| Anfrage abgeschickt | Café | Alle Angaben, Antwort geht direkt an den Gast |
+| Anfrage abgeschickt | Gast | Eingangsbestätigung, ausdrücklich noch nicht verbindlich |
+| „Bestätigen" geklickt | Gast | Feste Zusage mit Adresse und Kartenlink |
+| „Ablehnen"/„Stornieren" | Gast | Absage mit Bitte um Rückruf |
+
+Einrichtung:
+
+1. Account auf [resend.com](https://resend.com) anlegen (kostenlos: 3.000
+   Mails/Monat).
+2. Unter **Domains** `cafe-doa.de` hinzufügen und die angezeigten
+   DNS-Einträge bei IONOS eintragen.
+   ⚠️ Resend nutzt eine Subdomain (meist `send`). Im Hostname-Feld muss
+   `send` stehen, **nicht** `@` – sonst gehen die Postfächer bei IONOS
+   kaputt. Der bestehende SPF-Eintrag auf `@` bleibt unverändert.
+3. Unter **API Keys** einen Key mit *Sending access* erstellen.
+4. In den Vercel-Projekteinstellungen hinterlegen:
+   ```
+   RESEND_API_KEY=re_...
+   RESERVATION_NOTIFICATION_FROM=Café DOA <reservierung@cafe-doa.de>
+   RESERVATION_NOTIFICATION_TO=info@cafe-doa.de
+   ```
+   Danach einmal **Redeploy**.
+
+Fehlen die Werte, funktionieren Reservierungen unverändert – es geht dann
+nur keine Mail raus. Auch ein fehlgeschlagener Versand lässt die
+Reservierung bestehen; der Fehler landet in den Vercel-Logs.
+
 ### Reservierungen verwalten
 
 Reservierungsanfragen landen in der Tabelle `reservations`

@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase";
 import { emailDomainAcceptsMail, validateEmailShape, validatePhone } from "@/lib/contact-validation";
+import { sendCafeNotification, sendGuestRequestReceived } from "@/lib/email";
 import {
   OPENING_HOURS,
   bookableTimeSlots,
@@ -157,6 +158,20 @@ export async function submitReservation(
       message: "Die Reservierung konnte nicht gesendet werden. Bitte versuche es später erneut oder ruf uns an.",
     };
   }
+
+  // Best-effort: the request is already stored, so a mail that fails to send
+  // must not turn a successful reservation into an error for the guest.
+  // Sent together rather than in sequence so the guest is not left waiting.
+  const details = {
+    name,
+    email: email.value,
+    phone: phone.value,
+    date,
+    time,
+    partySize,
+    message: message || undefined,
+  };
+  await Promise.allSettled([sendCafeNotification(details), sendGuestRequestReceived(details)]);
 
   return {
     status: "success",

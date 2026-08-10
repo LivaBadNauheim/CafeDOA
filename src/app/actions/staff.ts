@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { refresh } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { sendGuestConfirmed, sendGuestDeclined } from "@/lib/email";
 
 export type LoginState = { error?: string };
 
@@ -68,10 +69,14 @@ export async function setReservationStatus(id: string, status: ReservationStatus
   } = await supabase.auth.getUser();
   if (!user) return { error: "Nicht angemeldet." };
 
-  const { error } = await supabase
+  // Returning the row saves a second query and gives us the guest's details
+  // for the notification below.
+  const { data: updated, error } = await supabase
     .from("reservations")
     .update({ status, handled_by: user.id, handled_at: new Date().toISOString() })
-    .eq("id", id);
+    .eq("id", id)
+    .select("name, email, phone, reservation_date, reservation_time, party_size, message")
+    .single();
 
   if (error) {
     console.error("Reservation status update failed", {
@@ -81,6 +86,25 @@ export async function setReservationStatus(id: string, status: ReservationStatus
       hint: error.hint,
     });
     return { error: "Die Änderung konnte nicht gespeichert werden." };
+  }
+
+  // Best-effort, and only where the guest needs to know. A guest who hears
+  // nothing about a declined or cancelled booking turns up to no table.
+  if (updated && (status === "confirmed" || status === "declined" || status === "cancelled")) {
+    const details = {
+      name: updated.name,
+      email: updated.email,
+      phone: updated.phone,
+      date: updated.reservation_date,
+      time: String(updated.reservation_time).slice(0, 5),
+      partySize: updated.party_size,
+      message: updated.message ?? undefined,
+    };
+    if (status === "confirmed") {
+      await sendGuestConfirmed(details);
+    } else {
+      await sendGuestDeclined(details, status);
+    }
   }
 
   refresh();
