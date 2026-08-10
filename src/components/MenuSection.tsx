@@ -9,19 +9,21 @@ export default function MenuSection() {
   const showGlutenHint = ["breads", "poached-egg"].includes(active.slug);
 
   return (
-    <section id="menu" className="bg-cream-soft py-20 sm:py-28">
+    <section id="menu" className="bg-cream-soft py-16 sm:py-24">
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
         <div className="max-w-xl">
-          <p className="eyebrow">Speisen &amp; Getränke</p>
-          <h2 className="font-display mt-4 text-3xl font-semibold text-ink sm:text-4xl">
-            Unser Menü
-          </h2>
+          <h2 className="font-display text-3xl font-semibold text-ink sm:text-4xl">Karte</h2>
+          <p className="mt-3 leading-relaxed text-ink-soft">
+            Cola gibt es bei uns nicht. Dafür acht Limos, die wir selbst
+            ansetzen, frisch gepresste Säfte und ziemlich viel, das ohne
+            Tierisches auskommt.
+          </p>
         </div>
 
         <div
           role="tablist"
-          aria-label="Menü-Kategorien"
-          className="mt-10 flex flex-wrap gap-2"
+          aria-label="Kategorien der Karte"
+          className="mt-8 flex flex-wrap gap-2"
         >
           {menuCategories.map((category) => (
             <button

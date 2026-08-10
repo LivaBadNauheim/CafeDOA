@@ -137,18 +137,33 @@ keine Daten – Zugriff wird bewusst einzeln vergeben.
 ### Bedienung
 
 Reservierungen erscheinen automatisch, ohne die Seite neu zu laden (der
-Punkt oben rechts zeigt „Live"). Über **Bestätigen** und **Ablehnen**
-wird der Status gesetzt; bestätigte lassen sich später stornieren. Die
-Filter zeigen offene Anfragen, den heutigen Tag, alle kommenden oder
-sämtliche Reservierungen.
+Punkt oben rechts zeigt „Live"). Zusätzlich lädt die Ansicht jede Minute
+und beim Zurückwechseln auf den Tab neu, damit nichts untergeht, falls
+die Verbindung abreißt.
 
-### Galerie-Fotos hochladen
+Aufbau:
 
-Fotos einfach im **Supabase Studio → Storage → gallery** hochladen. Die
-Website liest den Bucket automatisch aus (Aktualisierung spätestens
-stündlich, siehe `revalidate` in `src/app/page.tsx`) und zeigt die Bilder
-in der Galerie – die Platzhalter-Kacheln verschwinden automatisch, sobald
-mindestens ein Bild vorhanden ist.
+- **Offene Anfragen** ganz oben – alles, was noch nicht bestätigt oder
+  abgelehnt wurde, mit Anzahl im Titel
+- **Kalender** – ein Punkt pro Tag mit Reservierungen: terracotta, solange
+  etwas offen ist, grün wenn alles bearbeitet ist. Ein Klick auf einen Tag
+  filtert die Liste daneben, ein weiterer hebt die Auswahl auf
+- **Tagesliste** – standardmäßig heute, mit Datum und Status je Eintrag
+
+Vergangenes verschwindet automatisch: Die Abfrage holt nur Tage ab heute,
+und abgelaufene Uhrzeiten des laufenden Tages werden ausgeblendet.
+
+### Fotos
+
+Die Seite bringt einen festen Satz Fotos mit: `public/fotos/`, gelistet in
+`src/lib/photos.ts`. Sie sind auf maximal 1600 px (Hero 2200 px)
+verkleinert und werden von `next/image` zusätzlich pro Gerät als WebP
+ausgeliefert.
+
+Wer sie austauschen will, ohne den Code anzufassen, lädt Bilder im
+**Supabase Studio → Storage → gallery** hoch – **vorhandene Uploads
+ersetzen den mitgelieferten Satz komplett.** Die Aktualisierung greift
+spätestens stündlich (siehe `revalidate` in `src/app/page.tsx`).
 
 Zwei Dinge steuert ihr über den **Dateinamen**:
 
@@ -173,13 +188,10 @@ vorher zu komprimieren.
 
 ## Noch offen / To-Do
 
-- **Adresse ergänzen**: Die genaue Straße/Hausnummer fehlt noch in
-  `src/lib/cafe-info.ts` (`addressLine`).
 - **Menü-Preise/Gerichte prüfen**: Aktuell aus Instagram-Screenshots
   übernommen (Stand 1. Juni) – bei Änderungen `src/lib/menu-data.ts`
   anpassen.
-- **"Über uns"-Text**: Aktuell ein Platzhaltertext in
-  `src/components/About.tsx` – gerne durch die echte Café-Geschichte
-  ersetzen.
-- **Echte Fotos**: Sobald Fotos in Supabase Storage liegen, ersetzen sie
-  automatisch die generierten Platzhalter-Kacheln.
+- **Instagram**: Verlinkt bewusst nur auf das Profil statt einen Feed
+  einzubetten. Eine Einbettung würde Meta-Skripte auf jedem Seitenaufruf
+  laden und Cookies setzen, bevor jemand irgendwo klickt – das schließt
+  die Datenschutzerklärung aus.

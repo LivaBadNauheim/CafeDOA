@@ -17,7 +17,7 @@ const inter = Inter({
 
 const title = "Café DOA – Coffee, Breakfast & Lunch in Bad Nauheim";
 const description =
-  "Café DOA in der Hauptstraße 11 in Bad Nauheim: Kaffee, Frühstück und Lunch mit Matcha, Acai Bowls und frisch zubereiteten Bowls. Menü ansehen, Eindrücke entdecken und Tisch reservieren.";
+  "Café DOA in der Hauptstraße 11 in Bad Nauheim: Kaffee, Matcha, Bowls und selbst angesetzte Limos. Täglich ab 9:30 Uhr, alles auch zum Mitnehmen. Karte ansehen und Tisch reservieren.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(CAFE_INFO.siteUrl),
@@ -29,6 +29,7 @@ export const metadata: Metadata = {
     description,
     url: CAFE_INFO.siteUrl,
     siteName: CAFE_INFO.name,
+    images: [{ url: "/fotos/hero-cappuccino.jpg", width: 1365, height: 2048 }],
     locale: "de_DE",
     type: "website",
   },

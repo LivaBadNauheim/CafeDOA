@@ -46,18 +46,3 @@ body {
 .font-display {
   font-family: var(--font-display), serif;
 }
-
-.eyebrow {
-  font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--color-terracotta);
-}
-
-.mosaic-bg {
-  background-image:
-    radial-gradient(circle at 15% 20%, rgba(196, 154, 87, 0.16), transparent 40%),
-    radial-gradient(circle at 85% 75%, rgba(31, 51, 39, 0.12), transparent 45%);
-}

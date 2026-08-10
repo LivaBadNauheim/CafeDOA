@@ -1,52 +1,65 @@
-import { PendantLampIcon } from "./icons";
-import { CAFE_INFO } from "@/lib/cafe-info";
+import Image from "next/image";
+import Link from "next/link";
+import { HERO_PHOTO } from "@/lib/photos";
 
 export default function Hero() {
   return (
-    <section id="top" className="mosaic-bg relative overflow-hidden bg-cream pt-14 pb-20 sm:pt-20 sm:pb-28">
-      <div className="mx-auto grid max-w-6xl gap-12 px-5 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+    <section id="top" className="bg-cream pt-10 pb-16 sm:pt-16 sm:pb-24">
+      <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 sm:px-8 lg:grid-cols-[1fr_0.85fr] lg:gap-16">
         <div>
-          <p className="eyebrow">Café · Bad Nauheim</p>
-          <h1 className="font-display mt-4 text-4xl font-semibold leading-[1.1] text-ink sm:text-5xl lg:text-6xl">
+          <h1 className="font-display text-4xl font-semibold leading-[1.05] text-ink sm:text-5xl lg:text-6xl">
             Coffee, Breakfast{" "}
             <span className="italic text-terracotta">&amp; Lunch</span>
           </h1>
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-ink-soft">
-            Mitten in Bad Nauheim: guter Kaffee, Matcha, Acai Bowls und frisch
-            zubereitete Bowls in gemütlicher Atmosphäre – zum Reinsetzen oder
-            Mitnehmen.
+          <p className="mt-6 max-w-md text-lg leading-relaxed text-ink-soft">
+            Matcha, Bowls und Limo, die wir selbst ansetzen. Hauptstraße 11,
+            mitten in Bad Nauheim, täglich ab 9:30 Uhr.
           </p>
-          <div className="mt-9 flex flex-wrap gap-4">
-            <a
-              href="#menu"
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href="/#menu"
               className="rounded-full bg-ink px-7 py-3.5 text-sm font-semibold text-cream transition-colors hover:bg-ink-soft"
             >
-              Menü entdecken
-            </a>
-            <a
-              href="#reservierung"
+              Zur Karte
+            </Link>
+            <Link
+              href="/#reservierung"
               className="rounded-full border border-ink/20 px-7 py-3.5 text-sm font-semibold text-ink transition-colors hover:border-ink/40"
             >
               Tisch reservieren
-            </a>
+            </Link>
           </div>
-          <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-ink-soft">
-            <span>{CAFE_INFO.openingHours}</span>
-            <span className="hidden sm:inline">·</span>
-            <span>{CAFE_INFO.postalCity}</span>
-          </div>
+
+          <dl className="mt-10 grid max-w-md grid-cols-2 gap-x-6 gap-y-4 border-t border-ink/10 pt-6 text-sm sm:grid-cols-3">
+            <div>
+              <dt className="text-ink-soft/70">Geöffnet</dt>
+              <dd className="mt-0.5 font-medium text-ink">Täglich 9:30–19 Uhr</dd>
+            </div>
+            <div>
+              <dt className="text-ink-soft/70">Küche</dt>
+              <dd className="mt-0.5 font-medium text-ink">Mo–Sa bis 19:45</dd>
+            </div>
+            <div>
+              <dt className="text-ink-soft/70">Zum Mitnehmen</dt>
+              <dd className="mt-0.5 font-medium text-ink">Gibt es alles</dd>
+            </div>
+          </dl>
         </div>
 
-        <div className="relative mx-auto aspect-[4/5] w-full max-w-sm">
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-[2rem] bg-green text-cream shadow-xl shadow-ink/10">
-            <PendantLampIcon className="h-16 w-16 opacity-90" />
-            <p className="font-display px-8 text-center text-xl italic">
-              &ldquo;Dear coffee, I love you.&rdquo;
-            </p>
-            <span className="text-xs uppercase tracking-[0.3em] text-cream/70">Café DOA</span>
+        <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
+            <Image
+              src={HERO_PHOTO.src}
+              alt={HERO_PHOTO.alt}
+              fill
+              sizes="(max-width: 1024px) 90vw, 480px"
+              className="object-cover"
+              priority
+            />
           </div>
-          <span className="absolute -bottom-5 -left-5 h-24 w-24 rotate-6 rounded-2xl border border-terracotta/40" />
-          <span className="absolute -right-4 -top-4 h-16 w-16 -rotate-12 rounded-2xl bg-gold/30" />
+          <span className="pointer-events-none absolute -bottom-4 -left-4 -z-10 h-28 w-28 rounded-2xl bg-green/15" />
+          <span className="pointer-events-none absolute -right-3 -top-3 -z-10 h-20 w-20 rounded-2xl bg-terracotta/15" />
         </div>
       </div>
     </section>

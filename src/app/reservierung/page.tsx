@@ -22,17 +22,14 @@ export default async function StaffPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/reservierung/login");
 
-  // Past bookings are noise for a service team; keep a short tail for
-  // reference and everything upcoming.
+  // Past days never reach the board - the team works forwards, and finished
+  // bookings only get in the way.
   const now = cafeNow();
-  const from = new Date(`${now.date}T00:00:00Z`);
-  from.setUTCDate(from.getUTCDate() - 1);
-  const since = from.toISOString().slice(0, 10);
 
   const { data, error } = await supabase
     .from("reservations")
     .select("id, name, email, phone, reservation_date, reservation_time, party_size, message, status, created_at")
-    .gte("reservation_date", since)
+    .gte("reservation_date", now.date)
     .order("reservation_date", { ascending: true })
     .order("reservation_time", { ascending: true })
     .limit(500);
@@ -50,6 +47,7 @@ export default async function StaffPage() {
     <ReservationBoard
       initialReservations={(data ?? []) as Reservation[]}
       today={now.date}
+      nowTime={now.time}
       userEmail={user.email ?? ""}
       loadError={Boolean(error)}
     />
