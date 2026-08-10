@@ -59,8 +59,10 @@ eingehalten wird.
 
 Konfiguriert in `src/lib/opening-hours.ts`:
 
-- **Buchbare Zeiten:** 9:30 – 18:30 Uhr in 15-Minuten-Schritten (letzter
-  Slot 30 Minuten vor Schließung)
+- **Buchbare Zeiten:** 9:30 – 18:00 Uhr in 15-Minuten-Schritten – gekoppelt
+  an den Küchenschluss, nicht an die Schließzeit: Wer einen Tisch bucht,
+  soll auch noch etwas bestellen können. Getränke laufen ohnehin bis 19 Uhr
+  und brauchen keine Reservierung.
 - **Vorlauf:** Für den heutigen Tag mindestens 30 Minuten im Voraus
 - **Vorausbuchung:** maximal 180 Tage
 

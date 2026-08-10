@@ -10,7 +10,7 @@ export const CAFE_INFO = {
   instagramHandle: "@cafe.doa",
   instagramUrl: "https://www.instagram.com/cafe.doa/",
   openingHours: "Täglich 9:30 – 19:00 Uhr",
-  kitchenHours: "Küche täglich bis 18:30 Uhr",
+  kitchenHours: "Küche täglich bis 18:00 Uhr",
   siteUrl: "https://cafe-doa.de",
   reservationNote: "Reservierungsanfragen werden von uns telefonisch oder per E-Mail bestätigt.",
 } as const;
