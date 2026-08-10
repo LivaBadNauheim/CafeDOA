@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Logo from "./Logo";
 import { InstagramIcon, PhoneIcon } from "./icons";
 import { CAFE_INFO } from "@/lib/cafe-info";
@@ -52,7 +53,17 @@ export default function Footer() {
       </div>
 
       <div className="mx-auto mt-12 max-w-6xl px-5 text-xs text-cream/50 sm:px-8">
-        © {new Date().getFullYear()} {CAFE_INFO.name}. Alle Rechte vorbehalten.
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <span>
+            © {new Date().getFullYear()} {CAFE_INFO.name}. Alle Rechte vorbehalten.
+          </span>
+          <Link href="/impressum" className="underline transition-colors hover:text-cream">
+            Impressum
+          </Link>
+          <Link href="/datenschutz" className="underline transition-colors hover:text-cream">
+            Datenschutz
+          </Link>
+        </div>
       </div>
     </footer>
   );

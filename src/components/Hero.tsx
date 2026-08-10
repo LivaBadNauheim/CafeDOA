@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PendantLampIcon } from "./icons";
 import { CAFE_INFO } from "@/lib/cafe-info";
 
@@ -17,18 +18,18 @@ export default function Hero() {
             Mitnehmen.
           </p>
           <div className="mt-9 flex flex-wrap gap-4">
-            <a
-              href="#menu"
+            <Link
+              href="/#menu"
               className="rounded-full bg-ink px-7 py-3.5 text-sm font-semibold text-cream transition-colors hover:bg-ink-soft"
             >
               Menü entdecken
-            </a>
-            <a
-              href="#reservierung"
+            </Link>
+            <Link
+              href="/#reservierung"
               className="rounded-full border border-ink/20 px-7 py-3.5 text-sm font-semibold text-ink transition-colors hover:border-ink/40"
             >
               Tisch reservieren
-            </a>
+            </Link>
           </div>
           <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-ink-soft">
             <span>{CAFE_INFO.openingHours}</span>
