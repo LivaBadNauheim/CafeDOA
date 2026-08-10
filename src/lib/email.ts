@@ -170,18 +170,19 @@ export async function sendGuestRequestReceived(details: ReservationDetails): Pro
       <p style="margin:0 0 20px;font-size:16px;line-height:1.6;color:#221d16;">
         danke für deine Anfrage! Wir haben sie erhalten und melden uns in Kürze mit der Bestätigung.
       </p>
-      ${detailBlock(details)}
-      <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#4a4238;font-style:italic;">
-        Bitte beachte: Diese Anfrage ist noch keine feste Reservierung. Verbindlich wird sie erst mit unserer Bestätigung.
+      <p style="margin:0 0 20px;padding:14px 18px;background:#fbf1ea;border-left:3px solid #bd6a3f;border-radius:8px;font-size:15px;line-height:1.6;color:#221d16;">
+        <strong>Bitte beachte:</strong> Diese Anfrage ist noch keine feste Reservierung.
+        Verbindlich wird sie erst mit unserer Bestätigung.
       </p>
+      ${detailBlock(details)}
       <p style="margin:0;font-size:16px;line-height:1.6;color:#221d16;">Bis bald, dein DOA-Team</p>`),
     text: `Hallo ${details.name},
 
 danke für deine Anfrage! Wir haben sie erhalten und melden uns in Kürze mit der Bestätigung.
 
-${formatDateTime(details.date, details.time)} · ${partyLabel(details.partySize)}
-
 Bitte beachte: Diese Anfrage ist noch keine feste Reservierung. Verbindlich wird sie erst mit unserer Bestätigung.
+
+${formatDateTime(details.date, details.time)} · ${partyLabel(details.partySize)}
 
 Bis bald, dein DOA-Team${footerText}`,
   });
