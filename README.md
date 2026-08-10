@@ -39,6 +39,22 @@ einen Hinweis, dass online noch nicht reserviert werden kann.
    NEXT_PUBLIC_SUPABASE_ANON_KEY=...
    ```
 
+### Rechtliche Seiten
+
+`/impressum` und `/datenschutz`, verlinkt im Footer. Die
+Datenschutzerklärung beschreibt die tatsächlich eingesetzten Dienste
+(Vercel, Supabase, Resend) – bei einem Wechsel oder Zusatz muss sie
+angepasst werden.
+
+Die Erklärung nennt eine Löschfrist von zwölf Monaten. Umgesetzt wird das
+von `supabase/migrations/0003_delete_old_reservations.sql`: ein
+nächtlicher `pg_cron`-Job löscht ältere Reservierungen. Läuft die
+Migration nicht, steht in der Datenschutzerklärung eine Zusage, die nicht
+eingehalten wird.
+
+> Die Texte sind nach bestem Wissen erstellt, aber keine Rechtsberatung.
+> Vor dem Livegang juristisch prüfen lassen.
+
 ### Reservierungsregeln
 
 Konfiguriert in `src/lib/opening-hours.ts`:
