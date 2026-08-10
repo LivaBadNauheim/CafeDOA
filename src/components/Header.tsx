@@ -1,16 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Logo from "./Logo";
 import { CloseIcon, InstagramIcon, MenuIcon, PhoneIcon } from "./icons";
 import { CAFE_INFO } from "@/lib/cafe-info";
 
+// Absolute so they also work from the Impressum and privacy pages, where a
+// bare "#menu" would jump nowhere.
 const NAV_LINKS = [
-  { href: "#ueber-uns", label: "Über uns" },
-  { href: "#menu", label: "Menü" },
-  { href: "#galerie", label: "Galerie" },
-  { href: "#reservierung", label: "Reservieren" },
-  { href: "#kontakt", label: "Kontakt" },
+  { href: "/#ueber-uns", label: "Über uns" },
+  { href: "/#menu", label: "Menü" },
+  { href: "/#galerie", label: "Galerie" },
+  { href: "/#reservierung", label: "Reservieren" },
+  { href: "/#kontakt", label: "Kontakt" },
 ];
 
 export default function Header() {
@@ -19,15 +22,15 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-ink/10 bg-cream/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5 sm:px-8">
-        <a href="#top" className="text-ink" onClick={() => setOpen(false)}>
+        <Link href="/#top" className="text-ink" onClick={() => setOpen(false)}>
           <Logo />
-        </a>
+        </Link>
 
         <nav className="hidden items-center gap-7 text-sm font-medium text-ink-soft lg:flex">
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="transition-colors hover:text-terracotta">
+            <Link key={link.href} href={link.href} className="transition-colors hover:text-terracotta">
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -41,12 +44,12 @@ export default function Header() {
           >
             <InstagramIcon />
           </a>
-          <a
-            href="#reservierung"
+          <Link
+            href="/#reservierung"
             className="rounded-full bg-green px-5 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-green-light"
           >
             Tisch reservieren
-          </a>
+          </Link>
         </div>
 
         <button
@@ -63,14 +66,14 @@ export default function Header() {
         <div className="border-t border-ink/10 bg-cream px-5 pb-6 pt-2 lg:hidden">
           <nav className="flex flex-col gap-1 text-base font-medium text-ink-soft">
             {NAV_LINKS.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className="rounded-lg px-2 py-2.5 transition-colors hover:bg-cream-soft"
                 onClick={() => setOpen(false)}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
           <div className="mt-4 flex items-center gap-4">
