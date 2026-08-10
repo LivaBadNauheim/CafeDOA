@@ -171,6 +171,14 @@ Aufbau:
 Vergangenes verschwindet automatisch: Die Abfrage holt nur Tage ab heute,
 und abgelaufene Uhrzeiten des laufenden Tages werden ausgeblendet.
 
+### Logo
+
+`src/components/logo-path.ts` enthält den Pfad des Mosaik-Zeichens,
+nachgezeichnet aus dem Original (Instagram-Profilbild). Die Datei ist
+generiert – bei einer neuen Vorlage neu tracen statt von Hand
+nachbessern. Gefärbt wird über `currentColor`, das Zeichen passt sich
+also dunkel im Header und creme im Footer automatisch an.
+
 ### Fotos
 
 Die Seite bringt einen festen Satz Fotos mit: `public/fotos/`, gelistet in
