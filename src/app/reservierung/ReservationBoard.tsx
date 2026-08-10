@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { setReservationStatus, signOut, type ReservationStatus } from "@/app/actions/staff";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import Logo from "@/components/Logo";
@@ -77,6 +78,7 @@ export default function ReservationBoard({
   const [actionError, setActionError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+  const router = useRouter();
 
   // Server data wins whenever the page re-renders (e.g. after an action).
   // Adjusting during render rather than in an effect avoids a second render
@@ -90,28 +92,64 @@ export default function ReservationBoard({
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return;
 
-    const channel = supabase
-      .channel("reservations-board")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "reservations" },
-        (payload) => {
-          setReservations((current) => {
-            if (payload.eventType === "DELETE") {
-              return current.filter((r) => r.id !== (payload.old as Reservation).id);
-            }
-            const row = payload.new as Reservation;
-            const without = current.filter((r) => r.id !== row.id);
-            return sortReservations([...without, row]);
-          });
-        },
-      )
-      .subscribe((status) => setLive(status === "SUBSCRIBED"));
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
+
+    (async () => {
+      // The realtime socket carries its own credentials. Subscribing before
+      // the session is read connects it as the anonymous role, which row
+      // level security denies - the channel then reports SUBSCRIBED but no
+      // event ever arrives.
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (cancelled) return;
+      if (session?.access_token) {
+        await supabase.realtime.setAuth(session.access_token);
+      }
+
+      channel = supabase
+        .channel("reservations-board")
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "reservations" },
+          (payload) => {
+            setReservations((current) => {
+              if (payload.eventType === "DELETE") {
+                return current.filter((r) => r.id !== (payload.old as Reservation).id);
+              }
+              const row = payload.new as Reservation;
+              const without = current.filter((r) => r.id !== row.id);
+              return sortReservations([...without, row]);
+            });
+          },
+        )
+        .subscribe((status) => {
+          if (!cancelled) setLive(status === "SUBSCRIBED");
+        });
+    })();
 
     return () => {
-      supabase.removeChannel(channel);
+      cancelled = true;
+      if (channel) supabase.removeChannel(channel);
     };
   }, []);
+
+  // A missed reservation is worse than a redundant fetch, so the board also
+  // re-reads on a timer and whenever the tab is brought back to the front.
+  // Realtime carries the live feel; this guarantees nothing is lost if the
+  // socket drops (flaky café wifi, a tablet asleep for hours).
+  useEffect(() => {
+    const revalidate = () => {
+      if (document.visibilityState === "visible") router.refresh();
+    };
+    const interval = setInterval(revalidate, 60_000);
+    document.addEventListener("visibilitychange", revalidate);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", revalidate);
+    };
+  }, [router]);
 
   const visible = useMemo(() => {
     const sorted = sortReservations(reservations);
