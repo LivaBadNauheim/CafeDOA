@@ -1,9 +1,14 @@
 export const OPENING_HOURS = {
   /** Café opens daily at this time. */
   opensAt: "09:30",
-  /** Latest bookable slot - half an hour before the 19:00 closing time. */
-  lastSlotAt: "18:30",
+  /**
+   * Latest bookable slot. Tied to when the kitchen closes rather than the
+   * café: a guest who books a table should still be able to order food.
+   * Drinks run until closing and need no reservation.
+   */
+  lastSlotAt: "18:00",
   closesAt: "19:00",
+  kitchenClosesAt: "18:00",
   slotMinutes: 15,
   /** Guests cannot book further ahead than this. */
   maxDaysAhead: 180,

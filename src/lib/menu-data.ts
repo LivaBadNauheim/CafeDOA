@@ -229,7 +229,7 @@ export const menuCategories: MenuCategory[] = [
   {
     slug: "bowls",
     title: "Bowls",
-    subtitle: "Küche täglich bis 18:30 Uhr",
+    subtitle: "Küche täglich bis 18:00 Uhr",
     groups: [
       {
         items: [
