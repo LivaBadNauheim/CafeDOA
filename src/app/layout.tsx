@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { CAFE_INFO } from "@/lib/cafe-info";
+import { SHARE_IMAGE } from "@/lib/photos";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
     description,
     url: CAFE_INFO.siteUrl,
     siteName: CAFE_INFO.name,
-    images: [{ url: "/fotos/hero-cappuccino.jpg", width: 1365, height: 2048 }],
+    images: [{ url: SHARE_IMAGE.src, width: SHARE_IMAGE.width, height: SHARE_IMAGE.height }],
     locale: "de_DE",
     type: "website",
   },
