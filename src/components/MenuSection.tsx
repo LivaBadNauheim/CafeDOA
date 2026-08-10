@@ -14,9 +14,8 @@ export default function MenuSection() {
         <div className="max-w-xl">
           <h2 className="font-display text-3xl font-semibold text-ink sm:text-4xl">Karte</h2>
           <p className="mt-3 leading-relaxed text-ink-soft">
-            Cola gibt es bei uns nicht. Dafür acht Limos, die wir selbst
-            ansetzen, frisch gepresste Säfte und ziemlich viel, das ohne
-            Tierisches auskommt.
+            Acht Limos, die wir selbst ansetzen, frisch gepresste Säfte und
+            Bowls mit viel Grün. Vieles davon vegan.
           </p>
         </div>
 

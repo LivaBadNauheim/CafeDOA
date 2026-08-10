@@ -38,7 +38,7 @@ export default function Hero() {
             </div>
             <div>
               <dt className="text-ink-soft/70">Küche</dt>
-              <dd className="mt-0.5 font-medium text-ink">Mo–Sa bis 19:45</dd>
+              <dd className="mt-0.5 font-medium text-ink">Täglich bis 18:30 Uhr</dd>
             </div>
             <div>
               <dt className="text-ink-soft/70">Zum Mitnehmen</dt>
