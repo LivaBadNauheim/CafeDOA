@@ -29,16 +29,15 @@ export default function ReservationForm() {
   const latestDate = latestBookableDate();
 
   return (
-    <section id="reservierung" className="bg-green py-20 text-cream sm:py-28">
+    <section id="reservierung" className="bg-green py-16 text-cream sm:py-24">
       <div className="mx-auto grid max-w-6xl gap-12 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div>
-          <p className="eyebrow text-terracotta-light">Reservierung</p>
-          <h2 className="font-display mt-4 text-3xl font-semibold sm:text-4xl">
+          <h2 className="font-display text-3xl font-semibold sm:text-4xl">
             Tisch reservieren
           </h2>
-          <p className="mt-6 max-w-md leading-relaxed text-cream/80">
-            Schick uns deine Wunschzeit – wir bestätigen deine Reservierung
-            anschließend telefonisch oder per E-Mail.
+          <p className="mt-4 max-w-md leading-relaxed text-cream/80">
+            Sag uns, wann du kommen willst. Wir schauen drüber und schicken dir
+            die Bestätigung per Mail.
           </p>
           <p className="mt-6 text-sm text-cream/70">{CAFE_INFO.openingHours}</p>
           <p className="mt-1 text-sm text-cream/70">{bookingWindowLabel}</p>
@@ -132,7 +131,7 @@ export default function ReservationForm() {
                 name="message"
                 rows={3}
                 className={inputClasses}
-                placeholder="Anlass, Allergien, Wünsche ..."
+                placeholder="Allergien, Kinderstuhl, Geburtstag ..."
               />
               {errors.message && <p className="text-sm text-terracotta">{errors.message}</p>}
             </div>

@@ -9,9 +9,8 @@ import { CAFE_INFO } from "@/lib/cafe-info";
 // Absolute so they also work from the Impressum and privacy pages, where a
 // bare "#menu" would jump nowhere.
 const NAV_LINKS = [
-  { href: "/#ueber-uns", label: "Über uns" },
-  { href: "/#menu", label: "Menü" },
-  { href: "/#galerie", label: "Galerie" },
+  { href: "/#menu", label: "Karte" },
+  { href: "/#galerie", label: "Fotos" },
   { href: "/#reservierung", label: "Reservieren" },
   { href: "/#kontakt", label: "Kontakt" },
 ];

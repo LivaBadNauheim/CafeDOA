@@ -176,6 +176,6 @@ export async function submitReservation(
   return {
     status: "success",
     message:
-      "Danke für deine Anfrage! Wir prüfen sie und bestätigen dir deinen Tisch telefonisch oder per E-Mail.",
+      "Anfrage ist da. Wir melden uns per Mail, sobald der Tisch bestätigt ist.",
   };
 }
