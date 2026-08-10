@@ -5,11 +5,22 @@ export type Photo = {
   height: number;
 };
 
-export const HERO_PHOTO: Photo = {
-  src: "/fotos/hero-cappuccino.jpg",
-  alt: "Cappuccino in einer mintgrünen Tasse auf dem Holztresen im Café DOA",
-  width: 1365,
-  height: 2048,
+/**
+ * Two crops of the same shot. A single file cannot serve both a wide banner
+ * and a phone screen without either slicing the food away or upscaling, so
+ * the layout picks per breakpoint.
+ */
+export const HERO_PHOTO = {
+  alt: "Pochiertes Ei mit Lachs und Avocado neben einem Iced Latte auf dem Holztisch im Café DOA",
+  wide: { src: "/fotos/hero-breit.jpg", width: 2560, height: 1440 },
+  tall: { src: "/fotos/hero-hoch.jpg", width: 1200, height: 1600 },
+} as const;
+
+export const SHARE_IMAGE: Photo = {
+  src: "/fotos/hero-breit.jpg",
+  alt: "Frühstück im Café DOA",
+  width: 2560,
+  height: 1440,
 };
 
 /** Shipped with the site; replaced by uploads to the Supabase gallery bucket. */

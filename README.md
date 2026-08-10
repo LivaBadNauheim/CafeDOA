@@ -174,9 +174,17 @@ und abgelaufene Uhrzeiten des laufenden Tages werden ausgeblendet.
 ### Fotos
 
 Die Seite bringt einen festen Satz Fotos mit: `public/fotos/`, gelistet in
-`src/lib/photos.ts`. Sie sind auf maximal 1600 px (Hero 2200 px)
+`src/lib/photos.ts`. Die Galeriebilder sind auf maximal 1600 px
 verkleinert und werden von `next/image` zusätzlich pro Gerät als WebP
 ausgeliefert.
+
+Das Hero-Foto liegt in **zwei Zuschnitten** desselben Motivs vor:
+`hero-breit.jpg` (2560 × 1440) für Desktop, `hero-hoch.jpg` (1200 × 1600)
+fürs Handy. Ein einzelnes Bild kann beides nicht bedienen – quer
+zugeschnitten wird auf dem Handy das Motiv zerschnitten, hochkant müsste
+es auf dem Desktop hochskaliert werden und wirkt unscharf. Beim Austausch
+also beide Zuschnitte aus einer Vorlage mit mindestens 2560 px Breite
+erzeugen.
 
 Wer sie austauschen will, ohne den Code anzufassen, lädt Bilder im
 **Supabase Studio → Storage → gallery** hoch – **vorhandene Uploads
