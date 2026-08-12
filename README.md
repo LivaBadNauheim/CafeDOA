@@ -221,12 +221,22 @@ Schalter sitzt serverseitig, im ausgelieferten Code steht nichts davon.
 
 So läuft es:
 
-1. Das Café gibt eine Karte aus (`/reservierung/punkte` → *Neue Karte
-   ausgeben*). Der Code ist zufällig, nicht fortlaufend – eine Kundennummer
-   0001 ließe sich hochzählen, und wer fremde Codes raten kann, sieht
-   fremde Punktestände.
+1. Der Gast legt sich auf `/punkte` selbst eine Karte an – oder bekommt
+   eine gedruckte im Café (`/reservierung/punkte` → *Neue Karte ausgeben*).
+   Der Code ist zufällig, nicht fortlaufend: Eine Kundennummer 0001 ließe
+   sich hochzählen, und wer fremde Codes raten kann, sieht fremde
+   Punktestände.
+
+   Selbstanlage ist unbedenklich, obwohl sie erst gesperrt war: Punkte
+   entstehen ausschließlich aus signierten Bons, und jeder Bon lässt sich
+   genau einmal einreichen. Zehn selbst angelegte Konten sind zehn leere
+   Konten.
 2. Der Gast scannt den QR der Karte mit der Handykamera, landet auf
-   `/punkte/<code>` und ist ab dann auf diesem Gerät verbunden.
+   `/punkte/<code>` und ist ab dann auf diesem Gerät verbunden. Wer selbst
+   angelegt hat, ist es sofort.
+
+   Auf `/punkte` lässt sich die Karte als QR anzeigen – das Team scannt sie
+   am Tresen mit *Karte des Gastes scannen*, statt den Code abzutippen.
 3. Nach dem Bezahlen scannt er den QR seines Bons. Der Server prüft die
    Signatur (siehe oben), rechnet und schreibt gut.
 4. Einlösen passiert am Tresen über `/reservierung/punkte`; den Rabatt

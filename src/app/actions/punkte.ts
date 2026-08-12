@@ -11,6 +11,7 @@ import {
   neuerToken,
   punkteProgrammAktiv,
   tokenNormalisieren,
+  TOKEN_MUSTER,
   type Praemie,
   type PunkteStand,
 } from "@/lib/punkte";
@@ -36,12 +37,55 @@ async function tokenAusCookie(): Promise<string | null> {
   return store.get(COOKIE)?.value ?? null;
 }
 
-/** Verbindet dieses Gerät mit der Karte. Legt das Konto an, falls es neu ist. */
+async function cookieSetzen(token: string) {
+  const store = await cookies();
+  store.set(COOKIE, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: COOKIE_MAXAGE,
+    path: "/",
+  });
+}
+
+/**
+ * Legt eine Karte ohne Zutun des Cafés an.
+ *
+ * Ich hatte das zuerst gesperrt, aus Sorge vor erfundenen Konten - die Sorge
+ * war unbegründet: Punkte entstehen ausschließlich aus signierten Bons, und
+ * jeder Bon lässt sich genau einmal einreichen. Wer sich zehn Konten anlegt,
+ * hat zehn leere Konten; ein Bon auf mehrere zu verteilen geht nicht. Die
+ * Sperre kostete also nur Gäste, die abends um zehn eine Karte wollen.
+ */
+export async function karteSelbstAnlegen(vorname: string): Promise<
+  { status: "ok"; token: string } | { status: "fehler"; meldung: string }
+> {
+  if (!punkteProgrammAktiv()) return { status: "fehler", meldung: "Nicht verfügbar." };
+
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) return { status: "fehler", meldung: "Gerade nicht möglich." };
+
+  const token = neuerToken();
+  const { error } = await supabase
+    .from("punkte_konten")
+    .insert({ token, vorname: vorname.trim().slice(0, 40) || null });
+
+  if (error) {
+    console.error("Karte konnte nicht angelegt werden:", error);
+    return { status: "fehler", meldung: "Hat nicht geklappt. Bitte nochmal." };
+  }
+
+  await cookieSetzen(token);
+  revalidatePath("/punkte");
+  return { status: "ok", token };
+}
+
+/** Verbindet dieses Gerät mit einer bestehenden Karte. */
 export async function karteVerbinden(rohToken: string): Promise<boolean> {
   if (!punkteProgrammAktiv()) return false;
 
   const token = tokenNormalisieren(rohToken);
-  if (!/^[A-Z2-9]{5}-[A-Z2-9]{5}$/.test(token)) return false;
+  if (!TOKEN_MUSTER.test(token)) return false;
 
   const supabase = createSupabaseAdminClient();
   if (!supabase) return false;
@@ -52,18 +96,11 @@ export async function karteVerbinden(rohToken: string): Promise<boolean> {
     .eq("token", token)
     .maybeSingle();
 
-  // Unbekannte Codes werden nicht angelegt: Karten gibt das Café aus, sonst
-  // koennte sich jeder selbst eines ausdenken und Punkte darauf sammeln.
+  // Nur bestehende Karten: Ein ausgedachter Code soll nicht stillschweigend
+  // zu einem Konto werden - wer neu anfaengt, nimmt "Karte anlegen".
   if (!data) return false;
 
-  const store = await cookies();
-  store.set(COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: COOKIE_MAXAGE,
-    path: "/",
-  });
+  await cookieSetzen(token);
   return true;
 }
 

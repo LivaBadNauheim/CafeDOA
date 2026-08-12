@@ -48,9 +48,14 @@ export function neuerToken(): string {
 }
 
 export function tokenNormalisieren(eingabe: string): string {
-  const roh = eingabe.trim().toUpperCase().replace(/[^A-Z2-9]/g, "");
+  // Gescannt wird meist die ganze Adresse von der Karte, nicht der nackte
+  // Code - der letzte Pfadteil ist dann das Gesuchte.
+  const ohneAdresse = eingabe.trim().replace(/^.*\/punkte\//i, "");
+  const roh = ohneAdresse.toUpperCase().replace(/[^A-Z2-9]/g, "");
   return roh.length === 10 ? `${roh.slice(0, 5)}-${roh.slice(5)}` : roh;
 }
+
+export const TOKEN_MUSTER = /^[A-Z2-9]{5}-[A-Z2-9]{5}$/;
 
 /** Kalendertag in Café-Zeit, als YYYY-MM-DD. */
 export function cafeTag(zeitpunkt: Date): string {
