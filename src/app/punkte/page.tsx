@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { praemienLesen, standLesen } from "@/app/actions/punkte";
-import { PUNKTE_REGELN, euro, punkteProgrammAktiv } from "@/lib/punkte";
+import { PUNKTE_REGELN, punkteProgrammAktiv } from "@/lib/punkte";
 import { karteUrl, qrPfad } from "@/lib/karte";
 import BonScanner from "./BonScanner";
 import DigitaleKarte from "./DigitaleKarte";
@@ -71,13 +71,21 @@ export default async function PunktePage() {
                 <ul className="mt-4 divide-y divide-ink/10">
                   {praemien.map((praemie) => {
                     const fehlt = praemie.punkte - stand.punkte_verfuegbar;
+                    const preis = `${praemie.punkte} ${praemie.punkte === 1 ? "Punkt" : "Punkte"}`;
                     return (
                       <li key={praemie.id} className="flex items-baseline justify-between gap-4 py-3">
                         <span className={fehlt > 0 ? "text-ink/50" : "font-medium"}>
                           {praemie.name}
                         </span>
-                        <span className="shrink-0 text-sm text-ink/60">
-                          {fehlt > 0 ? `noch ${fehlt}` : "einlösbar"}
+                        {/* Der Preis steht immer da - sonst weiss der Gast nicht,
+                            was ihn eine Praemie kostet, bevor er sie sich leisten kann. */}
+                        <span className="shrink-0 text-right text-sm">
+                          <span className={fehlt > 0 ? "text-ink/60" : "font-semibold text-green"}>
+                            {preis}
+                          </span>
+                          {fehlt > 0 && (
+                            <span className="block text-xs text-ink/45">noch {fehlt}</span>
+                          )}
                         </span>
                       </li>
                     );
@@ -89,10 +97,6 @@ export default async function PunktePage() {
               </section>
             )}
 
-            <p className="mt-12 text-xs text-ink/40">
-              Gesammelt aus {euro(stand.umsatz_cent)} Umsatz
-              {stand.punkte_eingeloest > 0 && `, ${stand.punkte_eingeloest} Punkte eingelöst`}.
-            </p>
           </>
         )}
       </main>
