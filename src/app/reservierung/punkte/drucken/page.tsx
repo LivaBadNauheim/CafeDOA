@@ -42,11 +42,18 @@ export default async function DruckenPage() {
         skaliert der Druckdialog den Inhalt, und die Karten kommen in einer
         Größe heraus, die zu keiner Schneidevorlage passt.
       */}
+      {/*
+        Beim ersten Probedruck brachte die Seite ihre Bildschirm-Abstaende mit
+        aufs Papier: Innenabstand, Maximalbreite und Zentrierung schoben das
+        Raster aus der Seite. Im Druck wird deshalb alles davon zurueckgesetzt,
+        und der Bogen beginnt exakt am Seitenrand.
+      */}
       <style>{`
-        @page { size: A4 portrait; margin: 8mm; }
+        @page { size: A4 portrait; margin: 5mm; }
         @media print {
-          html, body { background: #fff; }
-          .bogen { break-after: page; }
+          html, body { background: #fff; margin: 0; padding: 0; }
+          main { max-width: none !important; padding: 0 !important; margin: 0 !important; }
+          .bogen { margin: 0 !important; break-after: page; }
           .bogen:last-child { break-after: auto; }
         }
       `}</style>
@@ -77,8 +84,8 @@ export default async function DruckenPage() {
         {boegen.map((bogen, index) => (
           <div
             key={index}
-            className="bogen mt-8 grid justify-center gap-0 print:mt-0"
-            style={{ gridTemplateColumns: `repeat(${BOGEN.spalten}, 85mm)` }}
+            className="bogen mt-8 grid justify-start gap-0 print:mt-0"
+            style={{ gridTemplateColumns: `repeat(${BOGEN.spalten}, 85mm)`, width: `${BOGEN.spalten * 85}mm` }}
           >
             {bogen.map((karte) => (
               <Kundenkarte key={karte.id} token={karte.token} qr={karte.qr} />

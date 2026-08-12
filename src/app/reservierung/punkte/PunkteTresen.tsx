@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
+import QrScanner from "@/components/QrScanner";
 import { karteAusgeben, kontoSuchen, praemieEinloesen } from "@/app/actions/punkte";
 import { euro, type Praemie, type PunkteStand } from "@/lib/punkte";
 
@@ -22,14 +23,17 @@ export default function PunkteTresen({ praemien }: { praemien: Praemie[] }) {
   const [neueKarte, setNeueKarte] = useState<string | null>(null);
   const [laeuft, starte] = useTransition();
 
-  function suchen(formData: FormData) {
-    const begriff = String(formData.get("suche") ?? "");
+  function suchenMit(begriff: string) {
     setMeldung(null);
     starte(async () => {
       const gefunden = await kontoSuchen(begriff);
       setTreffer(gefunden);
       setGewaehlt(gefunden.length === 1 ? gefunden[0] : null);
     });
+  }
+
+  function suchen(formData: FormData) {
+    suchenMit(String(formData.get("suche") ?? ""));
   }
 
   function einloesen(praemie: Praemie) {
@@ -74,6 +78,18 @@ export default function PunkteTresen({ praemien }: { praemien: Praemie[] }) {
           Suchen
         </button>
       </form>
+
+      {/* Der Gast hält sein Handy hin, statt den Code vorzulesen. */}
+      <div className="mt-3">
+        <QrScanner
+          knopfText="Karte des Gastes scannen"
+          onErkannt={(inhalt) => {
+            setSuche(inhalt);
+            suchenMit(inhalt);
+          }}
+          onFehler={(text) => setMeldung({ art: "fehler", text })}
+        />
+      </div>
 
       {treffer?.length === 0 && (
         <p className="mt-6 text-sm text-ink/60">Kein Konto gefunden.</p>

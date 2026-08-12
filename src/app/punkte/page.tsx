@@ -4,8 +4,10 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { praemienLesen, standLesen } from "@/app/actions/punkte";
 import { PUNKTE_REGELN, euro, punkteProgrammAktiv } from "@/lib/punkte";
+import { karteUrl, qrPfad } from "@/lib/karte";
 import BonScanner from "./BonScanner";
-import KarteVerbinden from "./KarteVerbinden";
+import DigitaleKarte from "./DigitaleKarte";
+import KarteStart from "./KarteStart";
 
 export const metadata: Metadata = {
   title: "Punkte – Café DOA",
@@ -20,19 +22,24 @@ export default async function PunktePage() {
   if (!punkteProgrammAktiv()) notFound();
 
   const [stand, praemien] = await Promise.all([standLesen(), praemienLesen()]);
+  const qr = stand ? await qrPfad(karteUrl(stand.token)) : null;
 
   return (
     <>
       <Header />
       <main className="mx-auto w-full max-w-lg flex-1 px-5 py-12 sm:py-16">
-        {!stand ? (
+        {!stand || !qr ? (
           <>
-            <h1 className="font-display text-3xl font-semibold">Deine Punkte</h1>
+            <h1 className="font-display text-3xl font-semibold">Punkte sammeln</h1>
             <p className="mt-4 leading-relaxed text-ink/70">
-              Scan den Code auf deiner DOA-Karte, dann läuft alles auf diesem
-              Handy. Noch keine Karte? Frag uns beim nächsten Mal danach.
+              Bon scannen, Punkte kriegen, irgendwann was umsonst.{" "}
+              {PUNKTE_REGELN.kursLabel}, einlösen kannst du bei uns am Tresen.
             </p>
-            <KarteVerbinden />
+            <p className="mt-3 text-sm text-ink/60">
+              Die Karte liegt danach auf diesem Handy – du brauchst nichts zu
+              installieren und kein Passwort.
+            </p>
+            <KarteStart />
           </>
         ) : (
           <>
@@ -52,6 +59,10 @@ export default async function PunktePage() {
               <p className="mt-3 text-center text-xs text-ink/50">
                 Bons kannst du {PUNKTE_REGELN.fensterLabel} einreichen.
               </p>
+            </div>
+
+            <div className="mt-8">
+              <DigitaleKarte token={stand.token} qr={qr} />
             </div>
 
             {praemien.length > 0 && (

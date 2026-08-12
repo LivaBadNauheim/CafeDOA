@@ -67,9 +67,10 @@ export default function Kundenkarte({ token, qr }: Props) {
     height: "55mm",
     overflow: "hidden",
     display: "flex",
-    // Schnittlinie zum Ausschneiden. Druckt hellgrau mit, stört auf der
-    // fertigen Karte nicht, weil genau darauf geschnitten wird.
-    outline: "0.1mm solid #d8cdb8",
+    // Schnittlinie zum Ausschneiden. Als border statt outline: outline liegt
+    // ausserhalb der Box und verschiebt beim Drucken das Raster.
+    border: "0.1mm solid #d8cdb8",
+    boxSizing: "border-box",
   };
 
   const marke = (farbe: string) => (
@@ -82,14 +83,23 @@ export default function Kundenkarte({ token, qr }: Props) {
   if (KARTEN_LAYOUT === "zweigeteilt") {
     return (
       <div style={{ ...rahmen, background: CREME, color: TINTE }}>
+        {/*
+          28 statt 26 mm und der Schriftzug eine Spur kleiner: Auf dem ersten
+          Probedruck stiess "DOA" an die Kante des Streifens. Das Padding
+          sorgt dafuer, dass es auch mit einer Ersatzschrift nicht anschlaegt,
+          falls Inter beim Drucken einmal nicht geladen wird.
+        */}
         <div
           style={{
-            background: GRUEN, width: "26mm", flex: "0 0 26mm", display: "flex",
-            flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "2.5mm",
+            background: GRUEN, width: "28mm", flex: "0 0 28mm", display: "flex",
+            flexDirection: "column", alignItems: "center", justifyContent: "center",
+            gap: "2.5mm", padding: "0 2mm", overflow: "hidden",
           }}
         >
           <Zeichen farbe={CREME} mm={10} />
-          <span style={{ color: CREME, fontSize: "5mm", fontWeight: 700, letterSpacing: "0.08em" }}>DOA</span>
+          <span style={{ color: CREME, fontSize: "4.5mm", fontWeight: 700, letterSpacing: "0.06em", whiteSpace: "nowrap" }}>
+            DOA
+          </span>
         </div>
         <div
           style={{
