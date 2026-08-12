@@ -32,6 +32,11 @@ create policy "Staff can read punkte_gutschriften"
   on public.punkte_gutschriften for select to authenticated using (public.is_staff());
 
 -- Der Punktestand rechnet die Gutschriften mit.
+--
+-- `punkte_geschenkt` steht am Ende der Spaltenliste, nicht in der Mitte:
+-- `create or replace view` erlaubt nur, Spalten anzuhaengen. Eine dazwischen
+-- eingeschobene wuerde als Umbenennung der folgenden gelesen und die
+-- Migration mit einem Fehler abbrechen.
 create or replace view public.punkte_stand
 with (security_invoker = true) as
 select
@@ -44,8 +49,8 @@ select
   coalesce(e.punkte, 0)::int as punkte_eingeloest,
   floor(coalesce(b.umsatz_cent, 0) / 100.0)::int + coalesce(g.punkte, 0)::int
     - coalesce(e.punkte, 0)::int as punkte_verfuegbar,
-  coalesce(g.punkte, 0)::int as punkte_geschenkt,
-  b.letzter_bon
+  b.letzter_bon,
+  coalesce(g.punkte, 0)::int as punkte_geschenkt
 from public.punkte_konten k
 left join (
   select konto_id, sum(betrag_cent) as umsatz_cent, max(bon_zeit) as letzter_bon
@@ -121,3 +126,49 @@ $$;
 
 revoke execute on function public.punkte_gutschreiben(uuid, integer, text, text) from public;
 grant execute on function public.punkte_gutschreiben(uuid, integer, text, text) to authenticated;
+
+/**
+ * Einloesen muss die Gutschriften mitrechnen.
+ *
+ * Die Fassung aus 0004 zaehlte nur Bons minus Einloesungen. Damit haette ein
+ * Gast geschenkte Punkte in der Anzeige gesehen, sie aber nicht einloesen
+ * koennen - "Nicht genug Punkte", obwohl der Stand reicht.
+ */
+create or replace function public.punkte_einloesen(
+  p_konto_id uuid,
+  p_praemie text,
+  p_punkte integer
+)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_verfuegbar integer;
+begin
+  if not public.is_staff() then
+    raise exception 'Kein Zugriff';
+  end if;
+  if p_punkte is null or p_punkte <= 0 then
+    raise exception 'Ungueltige Punktzahl';
+  end if;
+
+  perform 1 from public.punkte_konten where id = p_konto_id for update;
+  if not found then
+    raise exception 'Konto nicht gefunden';
+  end if;
+
+  select punkte_verfuegbar into v_verfuegbar
+    from public.punkte_stand where id = p_konto_id;
+
+  if v_verfuegbar < p_punkte then
+    raise exception 'Nicht genug Punkte';
+  end if;
+
+  insert into public.punkte_einloesungen (konto_id, praemie, punkte, mitarbeiter)
+  values (p_konto_id, p_praemie, p_punkte, auth.uid());
+
+  return v_verfuegbar - p_punkte;
+end;
+$$;
