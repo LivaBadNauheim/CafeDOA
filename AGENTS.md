@@ -24,6 +24,7 @@ README, Begründungen in den Kommentaren am Code.
 | Fotos (Hero + Galerie) | `src/lib/photos.ts`, Dateien in `public/fotos/` |
 | Alle vier Mail-Texte | `src/lib/email.ts` |
 | E-Mail-/Telefonprüfung | `src/lib/contact-validation.ts` |
+| Bon-Prüfung (TSE-Signatur) | `src/lib/tse-beleg.ts` |
 | Reservierung speichern, bestätigen, absagen | `src/app/actions/` |
 | Mitarbeiter-Ansicht | `src/app/reservierung/` |
 | Datenbank + Rechte | `supabase/migrations/` |
@@ -52,6 +53,12 @@ Nicht wiederholen:
   sonst empfangen die IONOS-Postfächer des Cafés keine Mail mehr.
 - **`src/components/logo-path.ts` ist generiert.** Bei neuer Vorlage neu
   tracen, nicht von Hand nachbessern.
+- **Die von der TSE signierten Bytes haben kein äußeres `SEQUENCE`**, und die
+  Transaktionsnummer steckt als `OCTET STRING` darin, nicht als `INTEGER`.
+  Beides falsch anzunehmen liegt nahe und kostete hier mehrere tausend
+  vergeblich durchprobierte Varianten. Wer `tse-beleg.ts` anfasst, muss
+  danach `npm run test:tse` laufen lassen – der Selbsttest prüft gegen echte
+  Bons und gegen manipulierte.
 - **Preise und Gerichte stammen aus Instagram-Screenshots** (Stand 1. Juni)
   und sind vom Café nicht bestätigt. Nicht als gesichert behandeln.
 
