@@ -230,6 +230,85 @@ export async function karteAusgeben(vorname: string): Promise<
   return { status: "ok", token };
 }
 
+async function alsTeamPruefen() {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return null;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data: team } = await supabase.from("staff").select("user_id").maybeSingle();
+  return team ? supabase : null;
+}
+
+/**
+ * Legt einen Schwung Karten auf einmal an - die kommen ohnehin
+ * bogenweise aus dem Drucker, nicht einzeln.
+ */
+export async function kartenAnlegen(anzahl: number): Promise<PunkteAktion> {
+  if (!punkteProgrammAktiv()) return { status: "fehler", meldung: "Nicht verfügbar." };
+  if (!Number.isInteger(anzahl) || anzahl < 1 || anzahl > 200) {
+    return { status: "fehler", meldung: "Zwischen 1 und 200 Karten." };
+  }
+  if (!(await alsTeamPruefen())) return { status: "fehler", meldung: "Kein Zugriff." };
+
+  const admin = createSupabaseAdminClient();
+  if (!admin) return { status: "fehler", meldung: "Gerade nicht möglich." };
+
+  const neue = Array.from({ length: anzahl }, () => ({ token: neuerToken() }));
+  const { error } = await admin.from("punkte_konten").insert(neue);
+  if (error) {
+    console.error("Karten konnten nicht angelegt werden:", error);
+    return { status: "fehler", meldung: "Hat nicht geklappt." };
+  }
+
+  revalidatePath("/reservierung/punkte/drucken");
+  return { status: "ok", meldung: `${anzahl} Karten angelegt.` };
+}
+
+/**
+ * Hakt die gerade gedruckten Karten ab. Ohne diesen Schritt läge beim
+ * nächsten Druck derselbe Stapel wieder im Bogen.
+ */
+export async function alsGedrucktMarkieren(ids: string[]): Promise<PunkteAktion> {
+  if (!punkteProgrammAktiv()) return { status: "fehler", meldung: "Nicht verfügbar." };
+  if (ids.length === 0) return { status: "fehler", meldung: "Nichts zu markieren." };
+  if (!(await alsTeamPruefen())) return { status: "fehler", meldung: "Kein Zugriff." };
+
+  const admin = createSupabaseAdminClient();
+  if (!admin) return { status: "fehler", meldung: "Gerade nicht möglich." };
+
+  const { error } = await admin
+    .from("punkte_konten")
+    .update({ gedruckt_at: new Date().toISOString() })
+    .in("id", ids);
+
+  if (error) {
+    console.error("Markieren fehlgeschlagen:", error);
+    return { status: "fehler", meldung: "Hat nicht geklappt." };
+  }
+
+  revalidatePath("/reservierung/punkte/drucken");
+  return { status: "ok", meldung: `${ids.length} Karten als gedruckt abgehakt.` };
+}
+
+export async function ungedruckteKarten(): Promise<{ id: string; token: string }[]> {
+  if (!punkteProgrammAktiv()) return [];
+  if (!(await alsTeamPruefen())) return [];
+
+  const admin = createSupabaseAdminClient();
+  if (!admin) return [];
+
+  const { data } = await admin
+    .from("punkte_konten")
+    .select("id, token")
+    .is("gedruckt_at", null)
+    .order("created_at")
+    .limit(200);
+
+  return (data as { id: string; token: string }[] | null) ?? [];
+}
+
 export async function praemieEinloesen(
   kontoId: string,
   praemieId: string,

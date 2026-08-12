@@ -252,6 +252,34 @@ truncate public.punkte_einloesungen, public.punkte_belege,
          public.punkte_konten restart identity cascade;
 ```
 
+#### Karten drucken
+
+`/reservierung/punkte/drucken` legt Karten stapelweise an und setzt sie als
+Druckbogen: **2 × 5 Karten im Format 85 × 55 mm auf A4.** Danach *Als
+gedruckt abhaken* – sonst liegt beim nächsten Mal derselbe Stapel wieder im
+Bogen.
+
+Im Druckdialog **Ränder: keine** und **Skalierung: 100 %** wählen. Sonst
+skaliert der Browser, und die Karten kommen in einer Größe heraus, die zu
+keiner Schneidevorlage passt.
+
+Beim QR-Code entscheiden zwei Details über brauchbar und wertlos, beide
+waren beim ersten Versuch falsch:
+
+- **Ruhezone** (`margin: 4`) – ohne den hellen Rand ringsum finden Kameras
+  den Code nicht. Er ist dann gedruckt, aber unlesbar.
+- **`stroke`, nicht `fill`** – die Bibliothek zeichnet die Module als
+  Striche. Der erste Pfad in ihrer Ausgabe ist nur der weiße Hintergrund;
+  wer den nimmt, druckt ein leeres Quadrat.
+
+Beides wurde gegen echte Bilder geprüft: Bogen gerendert, QR wieder
+ausgelesen, Zieladresse verglichen. Wer am Kartenlayout etwas ändert,
+sollte das wiederholen – 500 unlesbare Karten fallen sonst erst am Tresen
+auf.
+
+Das Layout steht in `src/lib/karte.ts` (`KARTEN_LAYOUT`): `hell`, `dunkel`
+oder `zweigeteilt`.
+
 Was gespeichert wird: ein zufälliger Code, ein optionaler Vorname, je Bon
 Nummer, Betrag und Zeit. Kein Name, keine E-Mail, keine Adresse, keine
 Artikel – aus einem Bon geht nicht hervor, *was* jemand gegessen hat. Die
