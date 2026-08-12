@@ -262,6 +262,29 @@ truncate public.punkte_einloesungen, public.punkte_belege,
          public.punkte_konten restart identity cascade;
 ```
 
+#### Als App aufs Handy
+
+`src/app/manifest.ts` macht aus der Seite eine Web-App statt einer
+Verknüpfung: eigenes Symbol, eigener Name („DOA Punkte"), Vollbild ohne
+Adresszeile, eigener Eintrag im App-Umschalter. Gestartet wird direkt auf
+`/punkte` – wer die App öffnet, will nicht erst durch die Speisekarte
+scrollen.
+
+Kein App Store, keine Gebühren, keine Freigabe. Updates sind sofort da.
+
+Die Symbole in `public/` (`icon-192`, `icon-512`, `icon-maskable-512`,
+`apple-touch-icon`) sind aus `src/components/logo-path.ts` erzeugt – bei
+neuem Logo neu erzeugen, nicht von Hand bearbeiten. Die `maskable`-Fassung
+hat mehr Rand, weil Android Symbole auf seine eigene Form beschneidet und
+das Zeichen sonst angesägt wird.
+
+**Ein Stolperstein auf dem iPhone:** Eine gespeicherte Web-App hat dort
+einen eigenen Speicher, getrennt von Safari. Wer in Safari eine Karte
+anlegt und die Seite danach speichert, ist in der App zunächst nicht
+angemeldet. Deshalb nennt der Hinweis in `AlsAppSpeichern.tsx` den
+Kartencode und erklärt, dass die Punkte nicht verloren sind – ohne das
+denkt der Gast genau das.
+
 #### Karten drucken
 
 `/reservierung/punkte/drucken` legt Karten stapelweise an und setzt sie als

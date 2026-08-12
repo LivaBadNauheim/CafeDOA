@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import { praemienLesen, standLesen } from "@/app/actions/punkte";
 import { PUNKTE_REGELN, punkteProgrammAktiv } from "@/lib/punkte";
 import { karteUrl, qrPfad } from "@/lib/karte";
+import AlsAppSpeichern from "./AlsAppSpeichern";
 import BonScanner from "./BonScanner";
 import DigitaleKarte from "./DigitaleKarte";
 import KarteStart from "./KarteStart";
@@ -97,6 +98,7 @@ export default async function PunktePage() {
               </section>
             )}
 
+            <AlsAppSpeichern token={stand.token} />
           </>
         )}
       </main>
