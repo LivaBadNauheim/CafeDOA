@@ -3,8 +3,13 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import QrScanner from "@/components/QrScanner";
-import { karteAusgeben, kontoSuchen, praemieEinloesen } from "@/app/actions/punkte";
-import { euro, type Praemie, type PunkteStand } from "@/lib/punkte";
+import {
+  karteAusgeben,
+  kontoSuchen,
+  praemieEinloesen,
+  punkteGutschreiben,
+} from "@/app/actions/punkte";
+import { GUTSCHRIFT_MAX, euro, type Praemie, type PunkteStand } from "@/lib/punkte";
 
 type Meldung = { art: "ok" | "fehler"; text: string } | null;
 
@@ -200,6 +205,58 @@ export default function PunkteTresen({ praemien }: { praemien: Praemie[] }) {
               })}
             </ul>
           )}
+
+          {/* Punkte von Hand vergeben - oder einen Fehler zurücknehmen. */}
+          <details className="mt-6 border-t border-ink/10 pt-4">
+            <summary className="cursor-pointer text-sm text-ink/60">
+              Punkte von Hand vergeben
+            </summary>
+            <form
+              className="mt-3"
+              action={(formData) => {
+                const punkte = Number(formData.get("punkte") ?? 0);
+                const grund = String(formData.get("grund") ?? "");
+                starte(async () => {
+                  const ergebnis = await punkteGutschreiben(gewaehlt.id, punkte, grund);
+                  setMeldung({
+                    art: ergebnis.status === "ok" ? "ok" : "fehler",
+                    text: ergebnis.meldung,
+                  });
+                  if (ergebnis.status === "ok" && typeof ergebnis.punkte === "number") {
+                    setGewaehlt({ ...gewaehlt, punkte_verfuegbar: ergebnis.punkte });
+                  }
+                });
+              }}
+            >
+              <div className="flex gap-2">
+                <input
+                  name="punkte"
+                  type="number"
+                  min={-GUTSCHRIFT_MAX}
+                  max={GUTSCHRIFT_MAX}
+                  placeholder="Punkte"
+                  className="w-28 rounded-xl border border-ink/15 px-3 py-2.5 text-sm"
+                />
+                <input
+                  name="grund"
+                  placeholder="Grund (Pflicht)"
+                  maxLength={200}
+                  className="min-w-0 flex-1 rounded-xl border border-ink/15 px-3 py-2.5 text-sm"
+                />
+              </div>
+              <p className="mt-2 text-xs text-ink/45">
+                Minuszahl zieht ab. Höchstens {GUTSCHRIFT_MAX} auf einmal. Wer
+                es eingetragen hat, wird mitgeschrieben.
+              </p>
+              <button
+                type="submit"
+                disabled={laeuft}
+                className="mt-3 rounded-full border border-ink/20 px-5 py-2 text-sm font-semibold disabled:opacity-60"
+              >
+                Eintragen
+              </button>
+            </form>
+          </details>
 
           <button
             type="button"
