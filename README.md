@@ -262,6 +262,31 @@ truncate public.punkte_einloesungen, public.punkte_belege,
          public.punkte_konten restart identity cascade;
 ```
 
+#### Punkte ohne Bon
+
+`punkte_gutschriften` nimmt alles auf, was nicht aus einem Kassenbon kommt.
+Eine eigene Tabelle, weil `punkte_belege` für signierte Bons reserviert ist –
+ein erfundener Beleg darin würde die Prüfung entwerten, auf der das ganze
+Programm beruht.
+
+Gebucht wird über `punkte_gutschreiben(...)`, nicht per `insert`: Die Sperre
+verhindert, dass zwei gleichzeitige Abzüge den Stand ins Minus ziehen, und
+die Obergrenze von 500 begrenzt den Schaden eines Zahlendrehers.
+
+Ein Grund ist Pflicht und wer es eingetragen hat, wird mitgeschrieben – nicht
+aus Misstrauen, sondern damit in vier Wochen noch nachvollziehbar ist, warum
+ein Konto Punkte hat, die aus keinem Bon stammen. Negative Werte nehmen eine
+Gutschrift zurück.
+
+**Noch nicht gebaut, wartet auf Freigabe.** Alle drei vergeben Punkte über
+dieselbe Tabelle, unterscheidbar über die Spalte `art`:
+
+| Vorhaben | Was vorher zu klären ist |
+|---|---|
+| Willkommenspunkte im Aktionszeitraum | Von wann bis wann, wie viele – und dass jedes Konto sie nur einmal bekommt |
+| Freunde einladen | Empfehlungscode je Konto, wer wann Punkte bekommt, und was verhindert, dass sich jemand selbst zehnmal einlädt |
+| Google-Bewertung | **Technisch nicht prüfbar.** Google verrät nicht, wer bewertet hat. Läuft also nur über den Tresen: Gast zeigt die Bewertung, Team trägt die Punkte ein. Dafür braucht es keine Entwicklung, nur eine Absprache im Team |
+
 #### Als App aufs Handy
 
 `src/app/manifest.ts` macht aus der Seite eine Web-App statt einer

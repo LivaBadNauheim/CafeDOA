@@ -83,8 +83,12 @@ export type PunkteStand = {
   punkte_verdient: number;
   punkte_eingeloest: number;
   punkte_verfuegbar: number;
+  punkte_geschenkt: number;
   letzter_bon: string | null;
 };
+
+/** Obergrenze je Gutschrift, gespiegelt aus `punkte_gutschreiben`. */
+export const GUTSCHRIFT_MAX = 500;
 
 export type Praemie = {
   id: string;

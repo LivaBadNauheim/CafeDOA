@@ -6,6 +6,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { pruefeBelegCode } from "@/lib/tse-beleg";
 import {
+  GUTSCHRIFT_MAX,
   PUNKTE_REGELN,
   cafeTag,
   neuerToken,
@@ -344,6 +345,59 @@ export async function ungedruckteKarten(): Promise<{ id: string; token: string }
     .limit(200);
 
   return (data as { id: string; token: string }[] | null) ?? [];
+}
+
+/**
+ * Punkte von Hand vergeben - oder zurücknehmen.
+ *
+ * Ein Grund ist Pflicht, und wer es getan hat, wird mitgeschrieben. Nicht aus
+ * Misstrauen, sondern weil sonst in vier Wochen niemand mehr sagen kann,
+ * warum ein Konto 200 Punkte hat, die aus keinem Bon stammen.
+ */
+export async function punkteGutschreiben(
+  kontoId: string,
+  punkte: number,
+  grund: string,
+): Promise<PunkteAktion> {
+  if (!punkteProgrammAktiv()) return { status: "fehler", meldung: "Nicht verfügbar." };
+
+  if (!Number.isInteger(punkte) || punkte === 0) {
+    return { status: "fehler", meldung: "Bitte eine Punktzahl angeben." };
+  }
+  if (Math.abs(punkte) > GUTSCHRIFT_MAX) {
+    return { status: "fehler", meldung: `Höchstens ${GUTSCHRIFT_MAX} Punkte auf einmal.` };
+  }
+  if (!grund.trim()) {
+    return { status: "fehler", meldung: "Bitte einen Grund angeben." };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return { status: "fehler", meldung: "Gerade nicht möglich." };
+
+  const { data, error } = await supabase.rpc("punkte_gutschreiben", {
+    p_konto_id: kontoId,
+    p_punkte: punkte,
+    p_grund: grund.trim().slice(0, 200),
+    p_art: "manuell",
+  });
+
+  if (error) {
+    if (error.message.includes("Minus")) {
+      return { status: "fehler", meldung: "So viele Punkte hat das Konto nicht." };
+    }
+    console.error("Gutschrift fehlgeschlagen:", error);
+    return { status: "fehler", meldung: "Hat nicht geklappt." };
+  }
+
+  revalidatePath("/reservierung/punkte");
+  return {
+    status: "ok",
+    meldung:
+      punkte > 0
+        ? `${punkte} Punkte gutgeschrieben. Neuer Stand: ${data}.`
+        : `${Math.abs(punkte)} Punkte abgezogen. Neuer Stand: ${data}.`,
+    punkte: data as number,
+  };
 }
 
 export async function praemieEinloesen(
