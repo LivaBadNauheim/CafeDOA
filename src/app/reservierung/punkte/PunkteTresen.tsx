@@ -47,9 +47,14 @@ export default function PunkteTresen({ praemien }: { praemien: Praemie[] }) {
     <main className="mx-auto w-full max-w-2xl flex-1 px-5 py-10">
       <div className="flex items-baseline justify-between gap-4">
         <h1 className="font-display text-2xl font-semibold">Punkte</h1>
-        <Link href="/reservierung" className="text-sm text-ink/60 underline underline-offset-4">
-          Zu den Reservierungen
-        </Link>
+        <div className="flex gap-4 text-sm text-ink/60">
+          <Link href="/reservierung/punkte/drucken" className="underline underline-offset-4">
+            Karten drucken
+          </Link>
+          <Link href="/reservierung" className="underline underline-offset-4">
+            Reservierungen
+          </Link>
+        </div>
       </div>
 
       <form action={suchen} className="mt-6 flex gap-2">
