@@ -7,6 +7,16 @@ import { CAFE_INFO } from "./cafe-info";
  */
 export const KARTEN_LAYOUT: "hell" | "dunkel" | "zweigeteilt" = "hell";
 
+/**
+ * Linie zum Handschreiben des Vornamens.
+ *
+ * Bewusst nicht gedruckt: Ein gedruckter Name bräuchte je Karte einen
+ * eigenen Druckvorgang, der Gast müsste warten, und eine liegengebliebene
+ * Karte wäre plötzlich eine kleine Datenpanne statt eines Zufallscodes.
+ * Handschrift wirkt ohnehin persönlicher als Laserdruck.
+ */
+export const MIT_NAMENSLINIE = true;
+
 /** Visitenkartenformat. Zwei Spalten und fünf Reihen passen auf A4. */
 export const KARTE_MM = { breite: 85, hoehe: 55 } as const;
 export const BOGEN = { spalten: 2, reihen: 5 } as const;
