@@ -20,6 +20,7 @@ export default function QrScanner({ onErkannt, knopfText, onFehler }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const laeuftRef = useRef(false);
   const [aktiv, setAktiv] = useState(false);
+  const [startet, setStartet] = useState(false);
 
   const stoppen = useCallback(() => {
     laeuftRef.current = false;
@@ -30,23 +31,32 @@ export default function QrScanner({ onErkannt, knopfText, onFehler }: Props) {
   }, []);
 
   const starten = useCallback(async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      onFehler?.("Dieser Browser gibt uns keinen Zugriff auf die Kamera.");
+      return;
+    }
+    setStartet(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
       });
-      if (!videoRef.current) return;
-      videoRef.current.srcObject = stream;
-      await videoRef.current.play();
+      const video = videoRef.current;
+      if (!video) {
+        stream.getTracks().forEach((track) => track.stop());
+        onFehler?.("Die Kamera lässt sich gerade nicht öffnen.");
+        return;
+      }
+      video.srcObject = stream;
+      await video.play();
       setAktiv(true);
       laeuftRef.current = true;
 
       const suchen = () => {
         if (!laeuftRef.current) return;
-        const video = videoRef.current;
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext("2d", { willReadFrequently: true });
 
-        if (video && canvas && ctx && video.readyState === video.HAVE_ENOUGH_DATA) {
+        if (canvas && ctx && video.readyState === video.HAVE_ENOUGH_DATA) {
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -61,8 +71,15 @@ export default function QrScanner({ onErkannt, knopfText, onFehler }: Props) {
         requestAnimationFrame(suchen);
       };
       requestAnimationFrame(suchen);
-    } catch {
-      onFehler?.("Wir kommen nicht an die Kamera.");
+    } catch (fehler) {
+      const name = fehler instanceof Error ? fehler.name : "";
+      onFehler?.(
+        name === "NotAllowedError"
+          ? "Die Kamera ist für diese Seite gesperrt. In den Browser-Einstellungen freigeben – oder den Code eintippen."
+          : "Wir kommen nicht an die Kamera.",
+      );
+    } finally {
+      setStartet(false);
     }
   }, [onErkannt, onFehler, stoppen]);
 
@@ -70,22 +87,30 @@ export default function QrScanner({ onErkannt, knopfText, onFehler }: Props) {
 
   return (
     <div>
-      {aktiv ? (
-        <div className="overflow-hidden rounded-2xl bg-ink">
-          <video ref={videoRef} className="w-full" playsInline muted />
-          <button type="button" onClick={stoppen} className="w-full py-3 text-sm font-semibold text-cream">
-            Abbrechen
-          </button>
-        </div>
-      ) : (
+      {/*
+        Video und Canvas stehen immer im Baum, nur unsichtbar.
+        Sie erst beim Einschalten zu erzeugen war der Fehler: Beim Anhaengen
+        des Kamerabildes gab es das Element noch nicht, und der Aufruf lief
+        ins Leere - ohne Bild und ohne Meldung.
+      */}
+      <div className={aktiv ? "overflow-hidden rounded-2xl bg-ink" : "hidden"}>
+        <video ref={videoRef} className="w-full" playsInline muted autoPlay />
+        <button type="button" onClick={stoppen} className="w-full py-3 text-sm font-semibold text-cream">
+          Abbrechen
+        </button>
+      </div>
+
+      {!aktiv && (
         <button
           type="button"
           onClick={starten}
-          className="w-full rounded-full bg-ink px-7 py-4 text-sm font-semibold text-cream transition-colors hover:bg-ink/90"
+          disabled={startet}
+          className="w-full rounded-full bg-ink px-7 py-4 text-sm font-semibold text-cream transition-colors hover:bg-ink/90 disabled:opacity-60"
         >
-          {knopfText}
+          {startet ? "Kamera wird geöffnet…" : knopfText}
         </button>
       )}
+
       <canvas ref={canvasRef} className="hidden" />
     </div>
   );
