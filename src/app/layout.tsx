@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { CAFE_INFO } from "@/lib/cafe-info";
 import { SHARE_IMAGE } from "@/lib/photos";
@@ -20,11 +20,23 @@ const title = "Café DOA – Coffee, Breakfast & Lunch in Bad Nauheim";
 const description =
   "Café DOA in der Hauptstraße 11 in Bad Nauheim: Kaffee, Matcha, Bowls und selbst angesetzte Limos. Täglich ab 9:30 Uhr, alles auch zum Mitnehmen. Karte ansehen und Tisch reservieren.";
 
+export const viewport: Viewport = {
+  // Farbe der Statusleiste, wenn die Seite als App auf dem Handy liegt.
+  themeColor: "#1f3327",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(CAFE_INFO.siteUrl),
   title,
   description,
   alternates: { canonical: "/" },
+  // Ohne das öffnet iOS die gespeicherte Seite mit Adresszeile - also als
+  // Verknüpfung, nicht als App.
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "DOA Punkte" },
+  icons: {
+    icon: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     title,
     description,
