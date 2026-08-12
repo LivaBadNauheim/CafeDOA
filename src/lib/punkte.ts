@@ -79,6 +79,7 @@ export type PunkteStand = {
   id: string;
   token: string;
   vorname: string | null;
+  created_at: string;
   umsatz_cent: number;
   punkte_verdient: number;
   punkte_eingeloest: number;

@@ -400,6 +400,32 @@ export async function punkteGutschreiben(
   };
 }
 
+/**
+ * Alle Karten für die interne Übersicht.
+ *
+ * Eine Abfrage statt mehrerer Kennzahlen-Abfragen: Bei der Größenordnung
+ * eines Cafés ist die ganze Liste billiger als fünf Aggregate, und aus ihr
+ * lässt sich jede Zahl ableiten, die später noch dazukommt.
+ */
+export async function kartenUebersicht(): Promise<PunkteStand[]> {
+  if (!punkteProgrammAktiv()) return [];
+
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("punkte_stand")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(2000);
+
+  if (error) {
+    console.error("Übersicht konnte nicht geladen werden:", error);
+    return [];
+  }
+  return (data as PunkteStand[] | null) ?? [];
+}
+
 export async function praemieEinloesen(
   kontoId: string,
   praemieId: string,

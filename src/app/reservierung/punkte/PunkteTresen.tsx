@@ -57,6 +57,9 @@ export default function PunkteTresen({ praemien }: { praemien: Praemie[] }) {
       <div className="flex items-baseline justify-between gap-4">
         <h1 className="font-display text-2xl font-semibold">Punkte</h1>
         <div className="flex gap-4 text-sm text-ink/60">
+          <Link href="/reservierung/punkte/uebersicht" className="underline underline-offset-4">
+            Übersicht
+          </Link>
           <Link href="/reservierung/punkte/drucken" className="underline underline-offset-4">
             Karten drucken
           </Link>
