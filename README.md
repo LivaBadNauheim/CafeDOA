@@ -179,6 +179,39 @@ generiert – bei einer neuen Vorlage neu tracen statt von Hand
 nachbessern. Gefärbt wird über `currentColor`, das Zeichen passt sich
 also dunkel im Header und creme im Footer automatisch an.
 
+### Bon-Prüfung für das Punkteprogramm
+
+`src/lib/tse-beleg.ts` prüft den QR-Code auf dem Kassenbon gegen die
+Signatur der TSE. Grundlage für das geplante Treueprogramm: Gäste reichen
+ihren Bon selbst ein, die Kasse bleibt unangetastet.
+
+Ohne Signaturprüfung wäre das Programm wertlos. Der Code ist reiner Text –
+wer einen Bon gescannt hat, kennt den Aufbau und könnte sich in zwei
+Minuten einen über 200 € ausdenken. Weder Dublettenprüfung noch Zeitfenster
+noch Betragsgrenze würden das bemerken.
+
+Geprüft wird gegen den öffentlichen Schlüssel der TSE, nicht gegen die
+Kassenkennung: Beide Kassen (Tresen und Tischgerät) hängen an derselben
+TSE, ein gültig signierter Bon kann also nur aus dem Café stammen. Kommt
+ein Gerät mit eigener TSE dazu, muss dessen Schlüssel in
+`TSE_PUBLIC_KEYS` ergänzt werden.
+
+Punkte gibt es nur auf die Beträge zu 19 % und 7 %. Was zu 0 % läuft, ist
+Trinkgeld, Pfand oder ein Gutscheinverkauf – Trinkgeld gehört den
+Mitarbeitern, Pfand wird erstattet, und ein Gutschein zählte sonst doppelt.
+
+```bash
+npm run test:tse
+```
+
+prüft drei echte Bons und neun manipulierte. **Nach jeder Änderung an
+`tse-beleg.ts` laufen lassen** – die Prüfung hängt an einer Byte-für-Byte-
+Rekonstruktion dessen, was die TSE signiert hat, und ein Fehler darin fällt
+sonst erst auf, wenn Gäste am Tresen stehen.
+
+Die Prüfung läuft ausschließlich serverseitig. Im Browser wäre sie wertlos,
+weil der Client sie überspringen könnte.
+
 ### Fotos
 
 Die Seite bringt einen festen Satz Fotos mit: `public/fotos/`, gelistet in
