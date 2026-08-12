@@ -25,6 +25,7 @@ README, Begründungen in den Kommentaren am Code.
 | Alle vier Mail-Texte | `src/lib/email.ts` |
 | E-Mail-/Telefonprüfung | `src/lib/contact-validation.ts` |
 | Bon-Prüfung (TSE-Signatur) | `src/lib/tse-beleg.ts` |
+| Punkteprogramm (Regeln, Schalter) | `src/lib/punkte.ts` |
 | Reservierung speichern, bestätigen, absagen | `src/app/actions/` |
 | Mitarbeiter-Ansicht | `src/app/reservierung/` |
 | Datenbank + Rechte | `supabase/migrations/` |
@@ -53,6 +54,13 @@ Nicht wiederholen:
   sonst empfangen die IONOS-Postfächer des Cafés keine Mail mehr.
 - **`src/components/logo-path.ts` ist generiert.** Bei neuer Vorlage neu
   tracen, nicht von Hand nachbessern.
+- **Das Punkteprogramm ist noch nicht freigegeben.** Es hängt an
+  `PUNKTE_PROGRAMM_AKTIV`; ohne den Schalter antworten seine Seiten mit
+  „nicht gefunden". Nichts davon darf ohne Absprache sichtbar werden.
+- **Für Gäste gibt es keine Datenbank-Policy, und das ist Absicht.** Ein
+  Gast hat keine Sitzung; geschrieben wird ausschließlich serverseitig,
+  nachdem die Bon-Signatur geprüft wurde. Wer dem Browser Schreibrechte
+  gibt, macht die Prüfung wertlos – dann trägt jeder beliebige Beträge ein.
 - **Die von der TSE signierten Bytes haben kein äußeres `SEQUENCE`**, und die
   Transaktionsnummer steckt als `OCTET STRING` darin, nicht als `INTEGER`.
   Beides falsch anzunehmen liegt nahe und kostete hier mehrere tausend

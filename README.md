@@ -212,6 +212,52 @@ sonst erst auf, wenn Gäste am Tresen stehen.
 Die Prüfung läuft ausschließlich serverseitig. Im Browser wäre sie wertlos,
 weil der Client sie überspringen könnte.
 
+### Punkteprogramm
+
+**Noch nicht aktiv.** Solange `PUNKTE_PROGRAMM_AKTIV` nicht auf `true`
+steht, antworten `/punkte` und `/reservierung/punkte` mit „nicht
+gefunden" – kein Hinweis darauf, dass da etwas vorbereitet wird. Der
+Schalter sitzt serverseitig, im ausgelieferten Code steht nichts davon.
+
+So läuft es:
+
+1. Das Café gibt eine Karte aus (`/reservierung/punkte` → *Neue Karte
+   ausgeben*). Der Code ist zufällig, nicht fortlaufend – eine Kundennummer
+   0001 ließe sich hochzählen, und wer fremde Codes raten kann, sieht
+   fremde Punktestände.
+2. Der Gast scannt den QR der Karte mit der Handykamera, landet auf
+   `/punkte/<code>` und ist ab dann auf diesem Gerät verbunden.
+3. Nach dem Bezahlen scannt er den QR seines Bons. Der Server prüft die
+   Signatur (siehe oben), rechnet und schreibt gut.
+4. Einlösen passiert am Tresen über `/reservierung/punkte`; den Rabatt
+   bucht das Team wie jeden anderen in der Kasse.
+
+**Ein Punkt je vollem Euro, Restcent laufen weiter.** Der Punktestand wird
+nicht gespeichert, sondern aus der Umsatzsumme berechnet – dadurch stimmt
+er immer, und der halbe Punkt vom letzten Bon steckt ohne Zusatzfeld in der
+Summe. Der Kurs steht in der Ansicht `punkte_stand`.
+
+Prämien werden in der Datenbank gepflegt, nicht im Code:
+
+```sql
+insert into public.punkte_praemien (name, punkte, sortierung) values
+  ('Kaffee oder Limo', 100, 1),
+  ('Bowl nach Wahl',   250, 2);
+```
+
+**Vor dem echten Start** die Probierdaten wegräumen – die Prämien bleiben:
+
+```sql
+truncate public.punkte_einloesungen, public.punkte_belege,
+         public.punkte_konten restart identity cascade;
+```
+
+Was gespeichert wird: ein zufälliger Code, ein optionaler Vorname, je Bon
+Nummer, Betrag und Zeit. Kein Name, keine E-Mail, keine Adresse, keine
+Artikel – aus einem Bon geht nicht hervor, *was* jemand gegessen hat. Die
+Datenschutzerklärung braucht trotzdem einen Absatz, bevor das Programm
+startet.
+
 ### Fotos
 
 Die Seite bringt einen festen Satz Fotos mit: `public/fotos/`, gelistet in
