@@ -5,7 +5,7 @@ import { CAFE_INFO } from "./cafe-info";
  * Welches der drei Layouts gedruckt wird. Umstellen heißt: hier einen
  * Buchstaben ändern, nichts weiter.
  */
-export const KARTEN_LAYOUT: "hell" | "dunkel" | "zweigeteilt" = "hell";
+export const KARTEN_LAYOUT: "hell" | "dunkel" | "zweigeteilt" = "zweigeteilt";
 
 /**
  * Linie zum Handschreiben des Vornamens.
@@ -15,7 +15,7 @@ export const KARTEN_LAYOUT: "hell" | "dunkel" | "zweigeteilt" = "hell";
  * Karte wäre plötzlich eine kleine Datenpanne statt eines Zufallscodes.
  * Handschrift wirkt ohnehin persönlicher als Laserdruck.
  */
-export const MIT_NAMENSLINIE = true;
+export const MIT_NAMENSLINIE = false;
 
 /** Visitenkartenformat. Zwei Spalten und fünf Reihen passen auf A4. */
 export const KARTE_MM = { breite: 85, hoehe: 55 } as const;
