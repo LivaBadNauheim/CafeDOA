@@ -67,8 +67,10 @@ Nicht wiederholen:
   vergeblich durchprobierte Varianten. Wer `tse-beleg.ts` anfasst, muss
   danach `npm run test:tse` laufen lassen – der Selbsttest prüft gegen echte
   Bons und gegen manipulierte.
-- **Preise und Gerichte stammen aus Instagram-Screenshots** (Stand 1. Juni)
-  und sind vom Café nicht bestätigt. Nicht als gesichert behandeln.
+- **Preise und Gerichte stammen aus der offiziellen Karte** (`MENU_DOA_AUGUST_26.pdf`,
+  Stand August 2026) – vorher waren es Instagram-Screenshots und die lagen
+  an mehreren Stellen daneben. Bei einer neuen Karte wieder aus der PDF
+  übernehmen, nicht aus Fotos.
 
 ## Arbeitsweise
 
