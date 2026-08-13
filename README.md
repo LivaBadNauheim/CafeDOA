@@ -387,9 +387,10 @@ vorher zu komprimieren.
 
 ## Noch offen / To-Do
 
-- **Menü-Preise/Gerichte prüfen**: Aktuell aus Instagram-Screenshots
-  übernommen (Stand 1. Juni) – bei Änderungen `src/lib/menu-data.ts`
-  anpassen.
+- **Menü**: Übernommen aus der offiziellen Karte `MENU_DOA_AUGUST_26.pdf`
+  (Stand August 2026), gepflegt in `src/lib/menu-data.ts`. Bei einer neuen
+  Karte wieder aus der PDF übernehmen – die vorherige Fassung stammte aus
+  Instagram-Screenshots und lag an mehreren Stellen daneben.
 - **Instagram**: Verlinkt bewusst nur auf das Profil statt einen Feed
   einzubetten. Eine Einbettung würde Meta-Skripte auf jedem Seitenaufruf
   laden und Cookies setzen, bevor jemand irgendwo klickt – das schließt

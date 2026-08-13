@@ -41,10 +41,15 @@ export const menuCategories: MenuCategory[] = [
         items: [
           { name: "Cold Brew", price: "4,00 €" },
           { name: "Iced Latte", price: "4,00 €" },
-          { name: "Iced Matcha Latte", price: "5,00 €" },
-          { name: "Iced Mango / Strawberry Matcha Latte", price: "6,00 €" },
           { name: "Espresso Tonic", price: "5,00 €" },
           { name: "Iced Chai Latte", price: "4,00 €" },
+          { name: "Iced Matcha Latte", price: "5,00 €" },
+          { name: "Strawberry Matcha", price: "6,00 €" },
+          { name: "Mango Matcha", price: "6,00 €" },
+          { name: "Blaubeer Matcha", price: "6,00 €" },
+          { name: "Matcha x DOA Limo", price: "6,00 €" },
+          { name: "Matcha Colada", description: "Ananas & Kokos", price: "7,00 €" },
+          { name: "Coconut Cloud Foam", price: "+ 1,00 €" },
         ],
       },
       {
@@ -77,10 +82,9 @@ export const menuCategories: MenuCategory[] = [
           { name: "Grün", price: "3,50 €" },
           { name: "Kräuter", price: "3,50 €" },
           { name: "Früchte", price: "3,50 €" },
-          { name: "Ingwer", price: "3,50 €" },
           { name: "Frische Minze", price: "3,50 €" },
           { name: "Frische Minze Ingwer", price: "4,50 €" },
-          { name: "Orange Ingwer", description: "mit frischem O-Saft", price: "5,00 €" },
+          { name: "Orange Ingwer", description: "mit frischem O-Saft", price: "4,50 €" },
         ],
       },
     ],
@@ -150,8 +154,6 @@ export const menuCategories: MenuCategory[] = [
         items: [
           { name: "Corona 0,33 l", price: "4,00 €" },
           { name: "Corona Zero 0,33 l (alkoholfrei)", price: "4,00 €" },
-          { name: "Franziskaner Weissbier 0,5 l", price: "5,00 €" },
-          { name: "Franziskaner Weissbier 0,5 l (alkoholfrei)", price: "5,00 €" },
           { name: "Prosecco", price: "5,00 €" },
           { name: "Aperol Spritz", price: "7,50 €" },
           { name: "Hibiskus-Himbeer Spritz", price: "7,50 €" },
@@ -170,25 +172,26 @@ export const menuCategories: MenuCategory[] = [
             name: "Granola Fruit",
             description: "Granola – frische Früchte – Naturjoghurt",
             price: "9,00 €",
+            addOns: [{ label: "Soja Vanillejoghurt", price: "+ 1,00 €" }],
           },
           {
             name: "Granola Lotus",
             description: "Granola – Blaubeeren – Banane – Lotus-Creme – Naturjoghurt",
             price: "9,00 €",
+            addOns: [{ label: "Soja Vanillejoghurt", price: "+ 1,00 €" }],
           },
           {
             name: "Mini Granola Fruit",
             description: "Granola – frische Früchte – Naturjoghurt",
             price: "4,00 €",
+            addOns: [{ label: "Soja Vanillejoghurt", price: "+ 0,50 €" }],
           },
           {
             name: "Mini Granola Lotus",
             description: "Granola – Blaubeeren – Banane – Lotus-Creme – Naturjoghurt",
             price: "4,00 €",
+            addOns: [{ label: "Soja Vanillejoghurt", price: "+ 0,50 €" }],
           },
-          { name: "Acai Classic", description: "Granola – frische Früchte – Erdnussbutter", price: "10,50 €" },
-          { name: "Acai Lotus", description: "Granola – Erdbeere – Banane – Lotus-Creme", price: "10,50 €" },
-          { name: "Mango Sticky Rice", description: "Klebreis mit cremiger Kokosmilch – Mango", price: "6,50 €" },
         ],
       },
     ],
@@ -199,7 +202,6 @@ export const menuCategories: MenuCategory[] = [
     groups: [
       {
         items: [
-          { name: "Pincado", description: "Pink Hummus – Avocado – Schwarzkümmel – Sesam", price: "7,50 €" },
           { name: "Avocado Bread", description: "Avocado – Granatapfel – Sesam", price: "7,50 €" },
           { name: "Moztom", description: "Tomate – Avocado – Burrata – Pesto – Pistazie", price: "11,00 €" },
           {
@@ -218,7 +220,7 @@ export const menuCategories: MenuCategory[] = [
     groups: [
       {
         items: [
-          { name: "Pinkschado", description: "Pink Hummus – Avocado – Weichkäse", price: "10,00 €" },
+          { name: "Pinky", description: "Pink Hummus – Avocado – Weichkäse", price: "10,00 €" },
           { name: "Salmocado", description: "Lachs – Avocado – Sauce Hollandaise", price: "11,00 €" },
           { name: "Tuffo", description: "Bresaola – Trüffelcreme – Rucola – Parmesan", price: "12,50 €" },
           { name: "Chili Billy", description: "Knoblauch Joghurt – Chilibutter – Rucola – Parmesan", price: "9,50 €" },
