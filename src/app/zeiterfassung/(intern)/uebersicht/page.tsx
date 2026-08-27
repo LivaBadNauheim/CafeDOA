@@ -67,6 +67,16 @@ export default async function UebersichtPage() {
       <p className="mt-1 text-sm text-ink/60">Zum Bearbeiten auf eine Zeile tippen.</p>
 
       <div className="mt-4 overflow-hidden rounded-2xl border border-ink/10 bg-cream">
+        {/* Ohne Kopfzeile stehen dort zwei Zahlen mit einem Schraegstrich und
+            man muss erraten, welche davon das Soll aus dem Vertrag ist. */}
+        {aktive.length > 0 && (
+          <div className="hidden items-center gap-4 border-b border-ink/10 bg-cream-soft/60 px-4 py-2 text-[11px] font-medium text-ink/50 sm:flex">
+            <span className="flex-1">Mitarbeiter</span>
+            <span className="w-32" aria-hidden />
+            <span className="w-28 text-right">Gearbeitet / Vertrag</span>
+          </div>
+        )}
+
         {aktive.length === 0 && (
           <p className="px-4 py-6 text-sm text-ink/60">Noch niemand angelegt.</p>
         )}
@@ -93,7 +103,7 @@ export default async function UebersichtPage() {
                 </span>
               )}
 
-              <span className="shrink-0 font-mono text-sm">
+              <span className="w-28 shrink-0 text-right font-mono text-sm">
                 <span className="font-semibold">{stunden(minuten)}</span>
                 {grenze > 0 && <span className="text-ink/45"> / {stunden(grenze)}</span>}
               </span>

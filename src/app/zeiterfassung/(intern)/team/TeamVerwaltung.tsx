@@ -185,6 +185,18 @@ export default function TeamVerwaltung({ team, ichSelbst }: { team: Mitarbeiter[
 
       <h2 className="mt-10 font-display text-lg font-semibold">Alle Mitarbeiter</h2>
       <div className="mt-4 overflow-hidden rounded-2xl border border-ink/10 bg-cream">
+        {/* Kopfzeile fuer die beiden Zahlenfelder. Sie sehen gleich aus, und
+            welches die Stunden und welches die Urlaubstage sind, musste man
+            bisher raten. Auf schmalen Anzeigen brechen die Zeilen um, dort
+            steht die Beschriftung stattdessen direkt am Feld. */}
+        <div className="hidden items-center gap-x-3 border-b border-ink/10 bg-cream-soft/60 px-4 py-2 text-[11px] font-medium text-ink/50 sm:flex">
+          <span className="flex-1">Mitarbeiter</span>
+          <span className="w-20 text-center">Std./Monat</span>
+          <span className="w-20 text-center">Urlaub/Jahr</span>
+          <span className="w-28" aria-hidden />
+          <span className="w-32" aria-hidden />
+        </div>
+
         {team.map((mitarbeiter) => (
           <div
             key={mitarbeiter.user_id}
@@ -193,7 +205,7 @@ export default function TeamVerwaltung({ team, ichSelbst }: { team: Mitarbeiter[
             }`}
           >
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              <div className="min-w-0 flex-1">
+              <div className="w-full min-w-0 sm:w-auto sm:flex-1">
                 <p className="font-medium">
                   {mitarbeiter.name}
                   {mitarbeiter.rolle === "admin" && (
@@ -216,54 +228,62 @@ export default function TeamVerwaltung({ team, ichSelbst }: { team: Mitarbeiter[
                 </p>
               </div>
 
-              <input
-                type="number"
-                min={0}
-                step="0.5"
-                defaultValue={mitarbeiter.stunden_pro_monat}
-                onBlur={(e) => {
-                  const wert = Number(e.target.value);
-                  if (wert === mitarbeiter.stunden_pro_monat) return;
-                  starte(async () =>
-                    melden(
-                      await mitarbeiterAendern(mitarbeiter.user_id, { stunden_pro_monat: wert }),
-                      "Gespeichert.",
-                    ),
-                  );
-                }}
-                className="w-20 rounded-lg border border-ink/15 bg-cream-soft px-2 py-2 text-sm"
-                aria-label={`Monatsstunden von ${mitarbeiter.name}`}
-                title="Stunden pro Monat"
-              />
+              <label className="flex w-20 flex-col gap-0.5">
+                <span className="text-[10px] font-medium text-ink/50 sm:hidden">
+                  Std./Monat
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.5"
+                  defaultValue={mitarbeiter.stunden_pro_monat}
+                  onBlur={(e) => {
+                    const wert = Number(e.target.value);
+                    if (wert === mitarbeiter.stunden_pro_monat) return;
+                    starte(async () =>
+                      melden(
+                        await mitarbeiterAendern(mitarbeiter.user_id, { stunden_pro_monat: wert }),
+                        "Gespeichert.",
+                      ),
+                    );
+                  }}
+                  className="w-full rounded-lg border border-ink/15 bg-cream-soft px-2 py-2 text-sm"
+                  aria-label={`Stunden pro Monat von ${mitarbeiter.name}`}
+                />
+              </label>
 
-              <input
-                type="number"
-                min={0}
-                step="0.5"
-                defaultValue={mitarbeiter.urlaubstage_pro_jahr}
-                onBlur={(e) => {
-                  const wert = Number(e.target.value);
-                  if (wert === mitarbeiter.urlaubstage_pro_jahr) return;
-                  starte(async () =>
-                    melden(
-                      await mitarbeiterAendern(mitarbeiter.user_id, {
-                        urlaubstage_pro_jahr: wert,
-                      }),
-                      "Gespeichert.",
-                    ),
-                  );
-                }}
-                className="w-20 rounded-lg border border-ink/15 bg-cream-soft px-2 py-2 text-sm"
-                aria-label={`Urlaubstage pro Jahr von ${mitarbeiter.name}`}
-                title="Urlaubstage pro Jahr"
-              />
+              <label className="flex w-20 flex-col gap-0.5">
+                <span className="text-[10px] font-medium text-ink/50 sm:hidden">
+                  Urlaub/Jahr
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.5"
+                  defaultValue={mitarbeiter.urlaubstage_pro_jahr}
+                  onBlur={(e) => {
+                    const wert = Number(e.target.value);
+                    if (wert === mitarbeiter.urlaubstage_pro_jahr) return;
+                    starte(async () =>
+                      melden(
+                        await mitarbeiterAendern(mitarbeiter.user_id, {
+                          urlaubstage_pro_jahr: wert,
+                        }),
+                        "Gespeichert.",
+                      ),
+                    );
+                  }}
+                  className="w-full rounded-lg border border-ink/15 bg-cream-soft px-2 py-2 text-sm"
+                  aria-label={`Urlaubstage pro Jahr von ${mitarbeiter.name}`}
+                />
+              </label>
 
               <button
                 type="button"
                 onClick={() =>
                   setPasswortFuer(passwortFuer === mitarbeiter.user_id ? null : mitarbeiter.user_id)
                 }
-                className="rounded-full border border-ink/15 px-4 py-2 text-sm"
+                className="shrink-0 rounded-full border border-ink/15 px-4 py-2 text-sm sm:w-28"
               >
                 Passwort
               </button>
@@ -279,7 +299,7 @@ export default function TeamVerwaltung({ team, ichSelbst }: { team: Mitarbeiter[
                     ),
                   )
                 }
-                className={`rounded-full border px-4 py-2 text-sm disabled:opacity-30 ${
+                className={`shrink-0 rounded-full border px-4 py-2 text-sm disabled:opacity-30 sm:w-32 ${
                   mitarbeiter.aktiv
                     ? "border-terracotta/30 text-terracotta"
                     : "border-green/30 text-green"
