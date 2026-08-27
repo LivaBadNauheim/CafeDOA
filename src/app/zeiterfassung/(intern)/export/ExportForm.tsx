@@ -17,8 +17,13 @@ export default function ExportForm({
   vorschlagVon: string;
   vorschlagBis: string;
 }) {
-  const [gewaehlt, setGewaehlt] = useState<string[]>([]);
-  const alle = gewaehlt.length === 0;
+  // Alle vorausgewählt. Vorher galt "keine Auswahl heißt alle" - das spart
+  // zwar Klicks, aber wer eine leere Liste sieht, rechnet mit einer leeren
+  // Datei und traut sich nicht auf den Knopf.
+  const [gewaehlt, setGewaehlt] = useState<string[]>(() => team.map((m) => m.user_id));
+
+  const umschalten = (userId: string, an: boolean) =>
+    setGewaehlt((alt) => (an ? [...alt, userId] : alt.filter((id) => id !== userId)));
 
   return (
     <form action="/zeiterfassung/export/datei" method="get" className="mt-6">
@@ -47,58 +52,70 @@ export default function ExportForm({
         </div>
 
         <fieldset className="mt-6">
-          <legend className="text-sm text-ink/70">
-            Mitarbeiter {alle && <span className="text-ink/45">– keiner gewählt heißt: alle</span>}
-          </legend>
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <legend className="text-sm text-ink/70">Mitarbeiter</legend>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-ink/50">
+                {gewaehlt.length} von {team.length}
+              </span>
+              <button
+                type="button"
+                onClick={() => setGewaehlt(team.map((m) => m.user_id))}
+                className="rounded-full border border-ink/15 px-3 py-1.5"
+              >
+                Alle
+              </button>
+              <button
+                type="button"
+                onClick={() => setGewaehlt([])}
+                className="rounded-full border border-ink/15 px-3 py-1.5"
+              >
+                Keine
+              </button>
+            </div>
+          </div>
 
-          <div className="mt-3 flex flex-wrap gap-2">
+          {/* Kästchen statt Chips: Bei drei Dutzend Namen sieht man auf einen
+              Blick, was an und was aus ist - bei gefärbten Chips muss man
+              erst die Farblogik verstehen. */}
+          <div className="mt-3 grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((mitarbeiter) => {
               const an = gewaehlt.includes(mitarbeiter.user_id);
               return (
                 <label
                   key={mitarbeiter.user_id}
-                  className={`cursor-pointer rounded-full border px-4 py-2 text-sm ${
-                    an ? "border-green bg-green text-cream" : "border-ink/15 hover:bg-ink/5"
-                  }`}
+                  className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-ink/10 bg-cream-soft px-3 py-2.5 text-sm hover:border-ink/25"
                 >
                   <input
                     type="checkbox"
                     name="person"
                     value={mitarbeiter.user_id}
                     checked={an}
-                    onChange={(event) =>
-                      setGewaehlt((alt) =>
-                        event.target.checked
-                          ? [...alt, mitarbeiter.user_id]
-                          : alt.filter((id) => id !== mitarbeiter.user_id),
-                      )
-                    }
-                    className="sr-only"
+                    onChange={(event) => umschalten(mitarbeiter.user_id, event.target.checked)}
+                    className="size-4 shrink-0 accent-green"
                   />
-                  {mitarbeiter.name}
-                  {!mitarbeiter.aktiv && <span className="ml-1.5 opacity-60">(inaktiv)</span>}
+                  <span className="min-w-0 truncate">
+                    {mitarbeiter.name}
+                    {!mitarbeiter.aktiv && (
+                      <span className="ml-1.5 text-xs text-ink/45">inaktiv</span>
+                    )}
+                  </span>
                 </label>
               );
             })}
           </div>
-
-          {gewaehlt.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setGewaehlt([])}
-              className="mt-3 text-sm text-ink/60 underline underline-offset-4"
-            >
-              Auswahl aufheben
-            </button>
-          )}
         </fieldset>
 
         <button
           type="submit"
-          className="mt-6 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-cream"
+          disabled={gewaehlt.length === 0}
+          className="mt-6 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-cream disabled:opacity-30"
         >
           Excel-Datei erstellen
         </button>
+        {gewaehlt.length === 0 && (
+          <p className="mt-2 text-sm text-ink/50">Wähl mindestens einen Mitarbeiter aus.</p>
+        )}
       </div>
 
       <p className="mt-4 text-sm leading-relaxed text-ink/55">
