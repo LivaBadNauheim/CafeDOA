@@ -1,13 +1,12 @@
 import { notFound } from "next/navigation";
-import { angemeldet, mitarbeiterListe } from "@/app/actions/zeit";
+import { alsAdmin, mitarbeiterListe } from "@/lib/zeit-server";
 import { heute, monatsErster, monatsLetzter } from "@/lib/zeit";
 import ExportForm from "./ExportForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function ExportPage() {
-  const person = await angemeldet();
-  if (person?.rolle !== "admin") notFound();
+  if (!(await alsAdmin())) notFound();
 
   const tag = heute();
 

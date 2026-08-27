@@ -16,7 +16,50 @@
   --foreground: var(--color-ink);
 }
 
+/*
+ * Dunkles Thema - nur für die internen Bereiche.
+ *
+ * Das Attribut setzt ein kleines Skript im Layout der Zeiterfassung; auf der
+ * öffentlichen Seite steht es nie, die bleibt hell. Umdefiniert werden
+ * dieselben Farbnamen, deshalb muss keine einzige Klasse im Markup doppelt
+ * gepflegt werden: `bg-cream` ist hier die dunkle Fläche.
+ *
+ * „cream-soft" bleibt dabei die zurücktretende Fläche (Seitenhintergrund,
+ * Eingabefelder) und „cream" die vordere (Karten) - im Dunkeln heißt
+ * zurücktreten dunkler statt heller.
+ */
+html[data-thema="dunkel"] {
+  --color-cream: #1d1a14;
+  --color-cream-soft: #12100c;
+  --color-cream-deep: #2b2720;
+  --color-ink: #f1ebdd;
+  --color-ink-soft: #bdb4a3;
+  /* Etwas aufgehellt: Auf #12100c wäre das Markengrün kaum vom Hintergrund
+     zu unterscheiden. Heller Text darauf bleibt lesbar. */
+  --color-green: #2f5340;
+  --color-green-light: #446e55;
+  /* Das dunklere Terracotta trägt auf hellem Grund; hier braucht es das
+     hellere, sonst versinken die Fehlermeldungen. */
+  --color-terracotta: #dd9068;
+  --color-terracotta-light: #eaa781;
+  --color-gold: #d4ae70;
+
+  --background: var(--color-cream-soft);
+  --foreground: var(--color-ink);
+
+  /* Damit Auswahlfelder, Uhrzeit-Eingaben und Scrollbalken vom Browser
+     ebenfalls dunkel gezeichnet werden. */
+  color-scheme: dark;
+}
+
+/* Feste Farbe für Text auf gefüllten Grünflächen: „cream" ist im dunklen
+   Thema selbst dunkel und taugt dafür nicht mehr. */
+:root {
+  --color-auf-green: #f6efe1;
+}
+
 @theme inline {
+  --color-auf-green: var(--color-auf-green);
   --color-cream: var(--color-cream);
   --color-cream-soft: var(--color-cream-soft);
   --color-cream-deep: var(--color-cream-deep);

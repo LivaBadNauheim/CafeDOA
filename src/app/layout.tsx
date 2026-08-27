@@ -85,7 +85,15 @@ const structuredData = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="de" className={`${fraunces.variable} ${inter.variable} h-full`}>
+    // Das Thema-Skript der internen Bereiche setzt hier ein Attribut, bevor
+    // React übernimmt - für React sieht das nach einer Abweichung aus. Genau
+    // dieses eine Element davon auszunehmen ist die Absicht; tiefer im Baum
+    // wird weiterhin geprüft.
+    <html
+      lang="de"
+      className={`${fraunces.variable} ${inter.variable} h-full`}
+      suppressHydrationWarning
+    >
       <body className="min-h-full flex flex-col bg-cream text-ink antialiased">
         {children}
         <script

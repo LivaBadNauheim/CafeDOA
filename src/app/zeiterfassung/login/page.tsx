@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { angemeldet } from "@/app/actions/zeit";
+import { angemeldet } from "@/lib/zeit-server";
 import LoginForm from "./LoginForm";
 
 export const metadata: Metadata = {

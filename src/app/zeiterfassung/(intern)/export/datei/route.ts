@@ -1,5 +1,5 @@
 import writeXlsxFile from "write-excel-file/node";
-import { alleEintraege, angemeldet } from "@/app/actions/zeit";
+import { alleEintraege, alsAdmin } from "@/lib/zeit-server";
 import { monatName, stunden, uhrzeit, wochentagName, TYPEN } from "@/lib/zeit";
 
 export const dynamic = "force-dynamic";
@@ -19,9 +19,8 @@ function dezimal(minuten: number): number {
  * Trennzeichen gehen dabei je nach Einstellung kaputt.
  */
 export async function GET(request: Request) {
-  const person = await angemeldet();
   // Der Riegel des Bereichs gilt hier nicht: Routen laufen ohne Layout.
-  if (person?.rolle !== "admin") {
+  if (!(await alsAdmin())) {
     return new Response("Kein Zugriff", { status: 403 });
   }
 
@@ -33,7 +32,7 @@ export async function GET(request: Request) {
   }
 
   const nurDiese = searchParams.getAll("person");
-  const alle = await alleEintraege({ von, bis });
+  const alle = await alleEintraege(von, bis);
   const eintraege = nurDiese.length ? alle.filter((e) => nurDiese.includes(e.user_id)) : alle;
 
   const kopf = { fontWeight: "bold" as const, backgroundColor: "#EFE4CF" };

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Logo from "@/components/Logo";
 import { abmelden } from "@/app/actions/zeit";
+import ThemaSchalter from "./Thema";
 import type { Mitarbeiter } from "@/lib/zeit";
 
 /**
@@ -56,7 +57,7 @@ export default function Seitenleiste({ person }: { person: Mitarbeiter }) {
               href={punkt.href}
               onClick={() => setOffen(false)}
               className={`rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
-                aktiv ? "bg-green text-cream" : "text-ink hover:bg-ink/5"
+                aktiv ? "bg-green text-auf-green" : "text-ink hover:bg-ink/5"
               }`}
             >
               {punkt.label}
@@ -65,7 +66,11 @@ export default function Seitenleiste({ person }: { person: Mitarbeiter }) {
         })}
       </nav>
 
-      <form action={abmelden} className="mt-6 border-t border-ink/10 pt-5">
+      <div className="mt-6 border-t border-ink/10 pt-5">
+        <ThemaSchalter />
+      </div>
+
+      <form action={abmelden} className="mt-2">
         <button
           type="submit"
           className="w-full rounded-xl px-4 py-3 text-left text-sm font-medium text-terracotta hover:bg-terracotta/5"

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { abmelden, zugang } from "@/app/actions/zeit";
+import { abmelden } from "@/app/actions/zeit";
+import { zugang } from "@/lib/zeit-server";
 import { LOGIN_DOMAIN } from "@/lib/zeit";
 import Logo from "@/components/Logo";
 import Seitenleiste from "./Seitenleiste";
+import { ThemaSkript } from "./Thema";
 
 export const metadata: Metadata = {
   title: "Zeiterfassung – Café DOA",
@@ -71,9 +73,12 @@ export default async function InternLayout({ children }: LayoutProps<"/zeiterfas
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-cream-soft lg:flex-row">
-      <Seitenleiste person={ergebnis.person} />
-      <div className="flex-1 overflow-x-hidden">{children}</div>
-    </div>
+    <>
+      <ThemaSkript />
+      <div className="flex min-h-dvh flex-col bg-cream-soft lg:flex-row">
+        <Seitenleiste person={ergebnis.person} />
+        <div className="flex-1 overflow-x-hidden">{children}</div>
+      </div>
+    </>
   );
 }
