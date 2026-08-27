@@ -104,15 +104,15 @@ export default function Kalender({
                 {Number(tag.slice(8))}
               </span>
               {typen.length > 0 ? (
-                <span className="mt-1 flex gap-0.5">
+                <span className="mt-1.5 flex gap-0.5">
                   {typen.map((typ) => (
                     <span key={typ} className={`h-1.5 w-1.5 rounded-full ${PUNKT[typ]}`} />
                   ))}
                 </span>
               ) : (
-                <span className="mt-1 h-1.5" />
+                <span className="mt-1.5 h-1.5" />
               )}
-              <span className="font-mono text-[10px] leading-none text-ink/45">
+              <span className="mt-1 font-mono text-[10px] leading-none text-ink/45">
                 {bild && bild.minuten > 0 ? stunden(bild.minuten) : " "}
               </span>
             </button>
