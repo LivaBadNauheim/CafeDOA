@@ -1,21 +1,20 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  angemeldet,
+  alsAdmin,
   eintraegeLaden,
   mitarbeiterListe,
-  monatsstand,
-} from "@/app/actions/zeit";
+  monatsfenster,
+  urlaubskonto,
+} from "@/lib/zeit-server";
 import {
+  gewaehlterMonat,
+  gewaehlterTag,
   heute as heuteBerechnen,
-  monatsErster,
-  monatsLetzter,
-  montagDerWoche,
-  tagPlus,
-  wochentage,
+  monatsBilanz,
 } from "@/lib/zeit";
-import Wochenansicht, { MonatsKopf } from "../../Wochenansicht";
-import Zeitraumwahl from "../../Zeitraumwahl";
+import Zeitplaner from "../../Zeitplaner";
+import { MonatsKopf, UrlaubsKarte } from "../../Karten";
 
 export const dynamic = "force-dynamic";
 
@@ -23,35 +22,28 @@ export default async function FremdeZeitenPage({
   params,
   searchParams,
 }: PageProps<"/zeiterfassung/zeiten/[userId]">) {
-  const person = await angemeldet();
-  if (person?.rolle !== "admin") notFound();
+  if (!(await alsAdmin())) notFound();
 
   const { userId } = await params;
-  const team = await mitarbeiterListe();
-  const mitarbeiter = team.find((m) => m.user_id === userId);
+  const mitarbeiter = (await mitarbeiterListe()).find(
+    (m) => m.user_id === userId,
+  );
   if (!mitarbeiter) notFound();
 
   const suche = await searchParams;
   const heute = heuteBerechnen();
-  const tag =
-    typeof suche.tag === "string" && /^\d{4}-\d{2}-\d{2}$/.test(suche.tag) ? suche.tag : heute;
-  const ansicht = suche.ansicht === "monat" ? "monat" : "woche";
+  const monat = gewaehlterMonat(suche.monat, heute);
+  const startTag = gewaehlterTag(suche.tag, monat);
+  const jahr = Number(monat.slice(0, 4));
+  const { von, bis } = monatsfenster(`${monat}-01`);
 
-  const tage =
-    ansicht === "woche"
-      ? wochentage(montagDerWoche(tag))
-      : Array.from(
-          { length: Number(monatsLetzter(tag).slice(8)) },
-          (_, i) => tagPlus(monatsErster(tag), i),
-        );
-
-  const [eintraege, stand] = await Promise.all([
-    eintraegeLaden(userId, tage[0], tage[tage.length - 1]),
-    monatsstand(userId, tag),
+  const [eintraege, konto] = await Promise.all([
+    eintraegeLaden(userId, von, bis),
+    urlaubskonto(userId, jahr),
   ]);
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
       <Link
         href="/zeiterfassung/uebersicht"
         className="text-sm text-ink/60 underline underline-offset-4"
@@ -59,24 +51,32 @@ export default async function FremdeZeitenPage({
         ← Übersicht
       </Link>
 
-      <h1 className="font-display mt-3 text-2xl font-semibold">{mitarbeiter.name}</h1>
+      <h1 className="font-display mt-3 text-2xl font-semibold">
+        {mitarbeiter.name}
+      </h1>
       <p className="mt-1 text-sm text-ink/60">
-        Änderungen hier werden als Korrektur durch die Leitung vermerkt.
-        {mitarbeiter.stunden_pro_monat > 0
-          ? " Die Monatsgrenze gilt für dich nicht – trag ein, was tatsächlich gearbeitet wurde."
-          : ""}
+        Änderungen hier werden als Korrektur durch die Leitung vermerkt. Die
+        Monatsgrenze gilt für dich nicht – trag ein, was tatsächlich gearbeitet
+        wurde.
       </p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <MonatsKopf tagImMonat={tag} {...stand} />
+        <MonatsKopf
+          tagImMonat={`${monat}-01`}
+          bilanz={monatsBilanz(eintraege, monat)}
+          grenzeStunden={mitarbeiter.stunden_pro_monat}
+        />
+        <UrlaubsKarte konto={konto} jahr={jahr} />
       </div>
 
       <div className="mt-8">
-        <Zeitraumwahl tag={tag} ansicht={ansicht} heute={heute} />
-      </div>
-
-      <div className="mt-4">
-        <Wochenansicht userId={userId} tage={tage} eintraege={eintraege} heute={heute} />
+        <Zeitplaner
+          userId={userId}
+          monat={monat}
+          eintraege={eintraege}
+          heute={heute}
+          startTag={startTag}
+        />
       </div>
     </main>
   );

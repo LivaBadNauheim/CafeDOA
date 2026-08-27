@@ -11,6 +11,11 @@ import { LOGIN_DOMAIN, stunden, type Mitarbeiter } from "@/lib/zeit";
 
 type Meldung = { art: "ok" | "fehler"; text: string } | null;
 
+/** 25 statt 25,0 - halbe Tage bleiben aber halbe. */
+function tage(wert: number): string {
+  return Number.isInteger(wert) ? String(wert) : wert.toFixed(1).replace(".", ",");
+}
+
 /** vorname.nachname aus einem Namen - ohne Umlaute und Sonderzeichen. */
 function loginVorschlag(name: string): string {
   const klein = name
@@ -65,6 +70,7 @@ export default function TeamVerwaltung({ team, ichSelbst }: { team: Mitarbeiter[
                 String(formData.get("passwort") ?? ""),
                 formData.get("rolle") === "admin" ? "admin" : "mitarbeiter",
                 Number(formData.get("stunden") ?? 0),
+                Number(formData.get("urlaub") ?? 0),
               );
               melden(antwort, "Angelegt.");
               if (antwort.ok) {
@@ -116,11 +122,22 @@ export default function TeamVerwaltung({ team, ichSelbst }: { team: Mitarbeiter[
             />
           </label>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <label className="text-sm">
-              <span className="text-ink/70">Stunden/Monat</span>
+              <span className="text-ink/70">Std./Monat</span>
               <input
                 name="stunden"
+                type="number"
+                min={0}
+                step="0.5"
+                defaultValue={0}
+                className="mt-1 w-full rounded-xl border border-ink/15 bg-cream-soft px-3 py-2.5"
+              />
+            </label>
+            <label className="text-sm">
+              <span className="text-ink/70">Urlaub/Jahr</span>
+              <input
+                name="urlaub"
                 type="number"
                 min={0}
                 step="0.5"
@@ -149,7 +166,7 @@ export default function TeamVerwaltung({ team, ichSelbst }: { team: Mitarbeiter[
               Anlegen
             </button>
             <p className="mt-2 text-xs text-ink/50">
-              0 Stunden heißt: keine Obergrenze.
+              0 Stunden heißt: keine Obergrenze. Urlaubstage gelten je Kalenderjahr.
             </p>
           </div>
         </form>
@@ -192,6 +209,10 @@ export default function TeamVerwaltung({ team, ichSelbst }: { team: Mitarbeiter[
                   {mitarbeiter.stunden_pro_monat > 0
                     ? `${stunden(mitarbeiter.stunden_pro_monat * 60)} Std. im Monat`
                     : "ohne Obergrenze"}
+                  {" · "}
+                  {mitarbeiter.urlaubstage_pro_jahr > 0
+                    ? `${tage(mitarbeiter.urlaubstage_pro_jahr)} Urlaubstage`
+                    : "kein Urlaubskontingent"}
                 </p>
               </div>
 
@@ -212,6 +233,29 @@ export default function TeamVerwaltung({ team, ichSelbst }: { team: Mitarbeiter[
                 }}
                 className="w-20 rounded-lg border border-ink/15 bg-cream-soft px-2 py-2 text-sm"
                 aria-label={`Monatsstunden von ${mitarbeiter.name}`}
+                title="Stunden pro Monat"
+              />
+
+              <input
+                type="number"
+                min={0}
+                step="0.5"
+                defaultValue={mitarbeiter.urlaubstage_pro_jahr}
+                onBlur={(e) => {
+                  const wert = Number(e.target.value);
+                  if (wert === mitarbeiter.urlaubstage_pro_jahr) return;
+                  starte(async () =>
+                    melden(
+                      await mitarbeiterAendern(mitarbeiter.user_id, {
+                        urlaubstage_pro_jahr: wert,
+                      }),
+                      "Gespeichert.",
+                    ),
+                  );
+                }}
+                className="w-20 rounded-lg border border-ink/15 bg-cream-soft px-2 py-2 text-sm"
+                aria-label={`Urlaubstage pro Jahr von ${mitarbeiter.name}`}
+                title="Urlaubstage pro Jahr"
               />
 
               <button

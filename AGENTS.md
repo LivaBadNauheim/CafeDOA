@@ -28,7 +28,7 @@ README, Begründungen in den Kommentaren am Code.
 | Punkteprogramm (Regeln, Schalter) | `src/lib/punkte.ts` |
 | Reservierung speichern, bestätigen, absagen | `src/app/actions/` |
 | Mitarbeiter-Ansicht | `src/app/reservierung/` |
-| Zeiterfassung (Regeln, Datum, Stunden) | `src/lib/zeit.ts` |
+| Zeiterfassung (Regeln, Datum, Stunden) | `src/lib/zeit.ts`, `src/lib/zeit-server.ts` |
 | Datenbank + Rechte | `supabase/migrations/` |
 
 Diese Werte stehen jeweils **an genau einer Stelle** und werden überall
