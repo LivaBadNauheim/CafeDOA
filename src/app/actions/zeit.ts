@@ -57,22 +57,53 @@ export async function abmelden() {
  * `zeit_mitarbeiter` macht jemanden zum Nutzer dieses Bereichs. Ein
  * deaktiviertes Konto kommt hier ebenfalls nicht durch.
  */
-export async function angemeldet(): Promise<Mitarbeiter | null> {
+export type Zugang =
+  | { status: "anonym" }
+  | { status: "ohne-profil"; email: string }
+  | { status: "gesperrt"; email: string }
+  | { status: "ok"; person: Mitarbeiter };
+
+/**
+ * Wer ist angemeldet - und darf diese Person hier überhaupt sein?
+ *
+ * Gibt die drei Fehlerfälle einzeln zurück, statt sie zu einem "nein"
+ * zusammenzufassen. Vorher landete jeder davon wortlos wieder auf der
+ * Anmeldung: Wer richtige Zugangsdaten eingibt und trotzdem zurückgeworfen
+ * wird, kann unmöglich erraten, dass nur der Profileintrag fehlt.
+ */
+export async function zugang(): Promise<Zugang> {
   const supabase = await createSupabaseServerClient();
-  if (!supabase) return null;
+  if (!supabase) return { status: "anonym" };
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) return { status: "anonym" };
 
-  const { data } = await supabase
+  const email = user.email ?? "";
+  const { data, error } = await supabase
     .from("zeit_mitarbeiter")
     .select("user_id, name, rolle, stunden_pro_monat, aktiv")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  return data?.aktiv ? (data as Mitarbeiter) : null;
+  if (error) {
+    console.error("Zeiterfassung: Profil konnte nicht gelesen werden", {
+      code: error.code,
+      message: error.message,
+      hint: error.hint,
+    });
+    return { status: "ohne-profil", email };
+  }
+  if (!data) return { status: "ohne-profil", email };
+  if (!data.aktiv) return { status: "gesperrt", email };
+
+  return { status: "ok", person: data as Mitarbeiter };
+}
+
+export async function angemeldet(): Promise<Mitarbeiter | null> {
+  const ergebnis = await zugang();
+  return ergebnis.status === "ok" ? ergebnis.person : null;
 }
 
 // --- Zeiten lesen --------------------------------------------------------
