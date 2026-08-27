@@ -20,8 +20,9 @@ create table if not exists public.zeit_eintraege (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
   datum date not null,
-  beginn time not null,
-  ende time not null,
+  typ text not null default 'arbeit' check (typ in ('arbeit', 'urlaub', 'krank', 'frei')),
+  beginn time,
+  ende time,
   pause_minuten integer not null default 0 check (pause_minuten >= 0),
   notiz text,
   created_at timestamptz not null default now(),
@@ -29,17 +30,26 @@ create table if not exists public.zeit_eintraege (
   -- nachvollziehbar bleiben, dass nicht der Mitarbeiter selbst es war.
   geaendert_von uuid references auth.users (id),
   geaendert_at timestamptz,
-  -- Nachtschichten gibt es hier nicht, das Café schliesst um 19 Uhr. Die
-  -- Prüfung fängt deshalb vor allem Zahlendreher ab.
-  constraint zeit_eintraege_reihenfolge check (ende > beginn),
-  constraint zeit_eintraege_pause_plausibel
-    check (pause_minuten < extract(epoch from (ende - beginn)) / 60)
+
+  -- Ein Eintrag je Person und Tag. Die Wochenansicht zeigt genau eine Zeile
+  -- pro Tag; mehrere Eintraege waeren dort nicht darstellbar. Geteilte
+  -- Schichten werden als eine Spanne mit langer Pause erfasst -
+  -- 9 bis 19 Uhr mit 240 Minuten Pause statt zweier Zeilen.
+  constraint zeit_eintraege_ein_tag unique (user_id, datum),
+
+  -- Zeiten gehoeren zur Arbeit. Urlaub, Krankheit und freie Tage haben
+  -- keine, und ohne diese Regel stuenden dort Reste alter Eingaben.
+  constraint zeit_eintraege_zeiten_nur_bei_arbeit check (
+    (typ = 'arbeit' and beginn is not null and ende is not null and ende > beginn
+      and pause_minuten < extract(epoch from (ende - beginn)) / 60)
+    or (typ <> 'arbeit' and beginn is null and ende is null and pause_minuten = 0)
+  )
 );
 
 create index if not exists zeit_eintraege_person_idx
   on public.zeit_eintraege (user_id, datum desc);
 
-/** Gearbeitete Minuten je Eintrag - abzüglich Pause. */
+/** Gearbeitete Minuten je Eintrag - abzüglich Pause, null bei Nicht-Arbeit. */
 create or replace view public.zeit_uebersicht
 with (security_invoker = true) as
 select
@@ -47,11 +57,16 @@ select
   e.user_id,
   m.name,
   e.datum,
+  e.typ,
   e.beginn,
   e.ende,
   e.pause_minuten,
   e.notiz,
-  (extract(epoch from (e.ende - e.beginn)) / 60)::int - e.pause_minuten as minuten,
+  case
+    when e.typ = 'arbeit'
+      then (extract(epoch from (e.ende - e.beginn)) / 60)::int - e.pause_minuten
+    else 0
+  end as minuten,
   e.geaendert_von,
   e.geaendert_at,
   e.created_at
@@ -130,7 +145,7 @@ declare
   v_minuten integer;
   v_neu integer;
 begin
-  if public.zeit_rolle() = 'admin' then
+  if new.typ <> 'arbeit' or public.zeit_rolle() = 'admin' then
     return new;
   end if;
 
@@ -145,13 +160,14 @@ begin
     into v_minuten
     from public.zeit_eintraege
    where user_id = new.user_id
+     and typ = 'arbeit'
      and date_trunc('month', datum) = date_trunc('month', new.datum)
-     and (tg_op = 'INSERT' or id <> new.id);
+     and id <> new.id;
 
   v_neu := (extract(epoch from (new.ende - new.beginn)) / 60)::int - new.pause_minuten;
 
   if v_minuten + v_neu > v_grenze * 60 then
-    raise exception 'Monatsgrenze ueberschritten: % von % Stunden bereits erfasst',
+    raise exception 'Monatsgrenze ueberschritten: % von % Stunden',
       round((v_minuten + v_neu) / 60.0, 2), v_grenze
       using errcode = 'check_violation';
   end if;
