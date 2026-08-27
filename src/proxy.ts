@@ -1,19 +1,26 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-/** reservierung.cafe-doa.de serves the staff dashboard. */
-const STAFF_SUBDOMAIN = "reservierung";
-const STAFF_PATH = `/${STAFF_SUBDOMAIN}`;
+/**
+ * Subdomains, die auf einen eigenen Bereich zeigen.
+ *
+ * reservierung.cafe-doa.de -> /reservierung (Gästedaten)
+ * zeiterfassung.cafe-doa.de -> /zeiterfassung (Personaldaten)
+ *
+ * Getrennte Adressen, damit im Team niemand zufällig im falschen Bereich
+ * landet - die beiden haben inhaltlich nichts miteinander zu tun.
+ */
+const SUBDOMAINS = ["reservierung", "zeiterfassung"] as const;
 
 export async function proxy(request: NextRequest) {
   const host = (request.headers.get("host") ?? "").toLowerCase();
   const { pathname } = request.nextUrl;
-  const isStaffHost = host.startsWith(`${STAFF_SUBDOMAIN}.`);
+  const bereich = SUBDOMAINS.find((name) => host.startsWith(`${name}.`));
 
   let response: NextResponse;
-  if (isStaffHost && !pathname.startsWith(STAFF_PATH)) {
+  if (bereich && !pathname.startsWith(`/${bereich}`)) {
     const rewritten = request.nextUrl.clone();
-    rewritten.pathname = pathname === "/" ? STAFF_PATH : `${STAFF_PATH}${pathname}`;
+    rewritten.pathname = pathname === "/" ? `/${bereich}` : `/${bereich}${pathname}`;
     response = NextResponse.rewrite(rewritten, { request });
   } else {
     response = NextResponse.next({ request });
