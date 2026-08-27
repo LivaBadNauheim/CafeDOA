@@ -8,6 +8,7 @@ import {
   TYPEN,
   geraeteZeitzone,
   minutenAus,
+  monatName,
   monatstage,
   montagDerWoche,
   stunden,
@@ -113,6 +114,9 @@ export default function Zeitplaner({
   const [geladen, setGeladen] = useState(eintraege);
   const [meldung, setMeldung] = useState<{ art: "ok" | "fehler"; text: string } | null>(null);
   const [ansicht, setAnsicht] = useState<"woche" | "monat">("woche");
+  // Zugeklappt beim Laden: Der Kalender ist zum Springen da, nicht zum
+  // Dauerlesen - offen liess er neben der Liste eine halbe Seite leer.
+  const [kalenderOffen, setKalenderOffen] = useState(false);
   const [ankerTag, setAnkerTag] = useState(
     () => startTag ?? (heute.startsWith(monat) ? heute : `${monat}-01`),
   );
@@ -256,16 +260,7 @@ export default function Zeitplaner({
         </p>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-[20rem_1fr] lg:items-start">
-        <Kalender
-          monat={monat}
-          heute={heute}
-          gewaehlteWoche={ansicht === "woche" ? woche : []}
-          jeTag={kalenderbild}
-          aufTag={zuTag}
-          aufMonat={zuMonat}
-        />
-
+      <div>
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex overflow-hidden rounded-full border border-ink/15">
@@ -314,7 +309,40 @@ export default function Zeitplaner({
             >
               Heute
             </button>
+
+            <button
+              type="button"
+              onClick={() => setKalenderOffen((offen) => !offen)}
+              aria-expanded={kalenderOffen}
+              className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium ${
+                kalenderOffen ? "border-green/40 bg-green/10 text-ink" : "border-ink/15 text-ink"
+              }`}
+            >
+              <span aria-hidden>📅</span>
+              {monatName(`${monat}-01`)}
+              <span aria-hidden className="text-xs text-ink/50">
+                {kalenderOffen ? "▲" : "▼"}
+              </span>
+            </button>
           </div>
+
+          {/* Ein Klick auf einen Tag klappt wieder zu: Man wollte springen,
+              nicht den Kalender offen lassen. */}
+          {kalenderOffen && (
+            <div className="mt-3 max-w-2xl">
+              <Kalender
+                monat={monat}
+                heute={heute}
+                gewaehlteWoche={ansicht === "woche" ? woche : []}
+                jeTag={kalenderbild}
+                aufTag={(tag) => {
+                  setKalenderOffen(false);
+                  zuTag(tag);
+                }}
+                aufMonat={zuMonat}
+              />
+            </div>
+          )}
 
           <div className="mt-4 overflow-hidden rounded-2xl border border-ink/10 bg-cream">
             {sichtbar.map((tag) => {
