@@ -344,6 +344,62 @@ Artikel – aus einem Bon geht nicht hervor, *was* jemand gegessen hat. Die
 Datenschutzerklärung braucht trotzdem einen Absatz, bevor das Programm
 startet.
 
+## Zeiterfassung (zeiterfassung.cafe-doa.de)
+
+Eigener Bereich für das Team, ausgeliefert über die Subdomain (siehe
+`src/proxy.ts`) – lokal unter `/zeiterfassung`.
+
+### Einrichten
+
+1. `supabase/migrations/0007_zeiterfassung.sql` im SQL-Editor ausführen.
+2. **Erste Leitung von Hand anlegen** – ohne sie kann niemand weitere
+   Konten erstellen:
+   ```sql
+   -- Konto in Authentication → Users → Add user anlegen (Auto Confirm),
+   -- Adresse nach dem Muster vorname.nachname@zeiterfassung.local
+   insert into public.zeit_mitarbeiter (user_id, name, rolle, stunden_pro_monat)
+   select id, 'Vorname Nachname', 'admin', 0
+   from auth.users where email = 'vorname.nachname@zeiterfassung.local';
+   ```
+3. Subdomain in Vercel unter **Settings → Domains** hinzufügen, dann bei
+   IONOS den angezeigten `CNAME` für `zeiterfassung` eintragen.
+
+Alle weiteren Konten legt die Leitung im Bereich **Team** an – dafür wird
+`SUPABASE_SECRET_KEY` gebraucht, derselbe Schlüssel wie beim
+Punkteprogramm.
+
+### Wie es aufgebaut ist
+
+**Ein Eintrag je Person und Tag**, mit einem Typ: Arbeit, Urlaub, Krank
+oder Frei. Geteilte Schichten werden als eine Spanne mit langer Pause
+erfasst – 9 bis 19 Uhr mit 240 Minuten Pause statt zweier Zeilen. Das hält
+die Wochenansicht bei sieben Zeilen.
+
+Erfasst wird **Beginn, Ende und Pause**, nicht nur eine Stundenzahl. Aus
+Beginn und Ende lässt sich die Stundenzahl ableiten, umgekehrt nicht.
+
+**Niemand sieht die Zeiten der anderen.** Das entscheidet Row Level
+Security in der Datenbank, nicht die Oberfläche.
+
+**Die Monatsgrenze ist ein Trigger**, kein Programmcode: Eine Prüfung in
+der Anwendung ließe sich umgehen, indem jemand direkt gegen die Datenbank
+schreibt. `stunden_pro_monat = 0` heißt: keine Obergrenze.
+
+Die Leitung ist von der Grenze **ausgenommen**, und das ist Absicht. Wer
+tatsächlich länger gearbeitet hat, muss das erfasst bekommen –
+Arbeitszeit, die niemand aufschreiben darf, wäre das größere Problem. Der
+Mitarbeiter wird gestoppt, die Leitung trägt es ein.
+
+### Export
+
+`/zeiterfassung/export` erzeugt eine echte `.xlsx` mit zwei Blättern: alle
+Tage einzeln und die Monatssummen je Mitarbeiter. Stunden stehen doppelt
+drin – als Dezimalzahl zum Weiterrechnen und als `Std:Min` zum Lesen.
+
+Als Route und nicht als Server Action: Eine Action kann keine Datei zum
+Herunterladen zurückgeben. Der Rechte-Check steht deshalb in der Route
+selbst – das Layout des Bereichs greift dort nicht.
+
 ### Fotos
 
 Die Seite bringt einen festen Satz Fotos mit: `public/fotos/`, gelistet in

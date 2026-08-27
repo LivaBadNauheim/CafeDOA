@@ -28,6 +28,7 @@ README, Begründungen in den Kommentaren am Code.
 | Punkteprogramm (Regeln, Schalter) | `src/lib/punkte.ts` |
 | Reservierung speichern, bestätigen, absagen | `src/app/actions/` |
 | Mitarbeiter-Ansicht | `src/app/reservierung/` |
+| Zeiterfassung (Regeln, Datum, Stunden) | `src/lib/zeit.ts` |
 | Datenbank + Rechte | `supabase/migrations/` |
 
 Diese Werte stehen jeweils **an genau einer Stelle** und werden überall
@@ -54,6 +55,10 @@ Nicht wiederholen:
   sonst empfangen die IONOS-Postfächer des Cafés keine Mail mehr.
 - **`src/components/logo-path.ts` ist generiert.** Bei neuer Vorlage neu
   tracen, nicht von Hand nachbessern.
+- **In der Zeiterfassung ist die Monatsgrenze ein Datenbank-Trigger**, kein
+  Programmcode – und die Leitung ist bewusst ausgenommen. Wer tatsächlich
+  länger gearbeitet hat, muss das erfasst bekommen; Arbeitszeit, die
+  niemand aufschreiben darf, ist das größere Problem.
 - **Das Punkteprogramm ist noch nicht freigegeben.** Es hängt an
   `PUNKTE_PROGRAMM_AKTIV`; ohne den Schalter antworten seine Seiten mit
   „nicht gefunden". Nichts davon darf ohne Absprache sichtbar werden.
